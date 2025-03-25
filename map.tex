@@ -550,8 +550,8 @@ $\MC$, however, will also provide metered access through the use of tokens.
 \label{Security model}
 
 This tokenized security model is \emph{generated} from the operational
-semantics. Here we are using the operational semantics outlined in the
-$\mathsf{MeTTa}$-calculus.
+semantics. Here, for example, we apply the method to the operational
+semantics outlined in the $\mathsf{MeTTa}$-calculus.
 
 \begin{mathpar}
   \inferrule* [lab=security-tokens] {} {T \bc () \;\bm\; s \;\bm\; T:T}
@@ -564,13 +564,13 @@ $\mathsf{MeTTa}$-calculus.
 where $\mathsf{\{}P\mathsf{\}}_{s}$ is a process signed by a digital signature.
 
 \begin{mathpar}
-  \inferrule* [lab=COMM-cosigned-par-external-sequential] {\sigma = \mathsf{unify}(t,u)} {\mathsf{\{}\mathsf{for}( t \sngllrarrow x )P\mathsf{\}}_{s_1} \;\mathsf{|}\; \mathsf{\{} x \mathsf{!}( u )\mathsf{;} Q \mathsf{\}}_{s_2}\;\mathsf{|}\; s_{1}\mathsf{\&}s_{2}:T \red \mathsf{\{}P\dot{\sigma}\mathsf{|}Q\dot{\sigma}\mathsf{\}}_{s_1\mathsf{\&}s_2} \;\mathsf{|}\; T} \\
+  \inferrule* [lab=COMM-cosigned-par-external-sequential] {\sigma = \mathsf{unify}(t,u)} {\mathsf{\{}\mathsf{for}( t \sngllrarrow x )P\mathsf{\}}_{s_1} \;\mathsf{|}\; \mathsf{\{} x \mathsf{!}( u )\mathsf{;} Q \mathsf{\}}_{s_2}\;\mathsf{|}\; s_{1}\mathsf{\&}s_{2}:T \red \mathsf{\{}P\sigma\mathsf{|}Q\sigma\mathsf{\}}_{s_1\mathsf{\&}s_2} \;\mathsf{|}\; T} \\
   \and
-  \inferrule* [lab=COMM-cosigned-par-external-concurrent] {\sigma = \mathsf{unify}(t,u)} {\mathsf{\{}\mathsf{for}( t \sngllrarrow x )P\mathsf{\}}_{s_1} \;\mathsf{|}\; \mathsf{\{} x \mathsf{!}( u )\mathsf{;} Q \mathsf{\}}_{s_2}\;\mathsf{|}\; s_{1}:T_{1}\;\mathsf{|}\;s_{2}:T_{1} \red \mathsf{\{}P\dot{\sigma}\mathsf{|}Q\dot{\sigma}\mathsf{\}}_{s_1\mathsf{\&}s_2} \;\mathsf{|}\; T_{1} \;\mathsf{|}\; T_{2}} \\
+  \inferrule* [lab=COMM-cosigned-par-external-concurrent] {\sigma = \mathsf{unify}(t,u)} {\mathsf{\{}\mathsf{for}( t \sngllrarrow x )P\mathsf{\}}_{s_1} \;\mathsf{|}\; \mathsf{\{} x \mathsf{!}( u )\mathsf{;} Q \mathsf{\}}_{s_2}\;\mathsf{|}\; s_{1}:T_{1}\;\mathsf{|}\;s_{2}:T_{1} \red \mathsf{\{}P\sigma\mathsf{|}Q\sigma\mathsf{\}}_{s_1\mathsf{\&}s_2} \;\mathsf{|}\; T_{1} \;\mathsf{|}\; T_{2}} \\
   \and
   \inferrule* [lab=COMM-signed] {P \red P'} {\mathsf{\{}P\mathsf{\}}_{s} \;\mathsf{|}\; s:T \red \mathsf{\{}P'\mathsf{\}}_{s} \;\mathsf{|}\; T} \\
   \and
-  \inferrule* [lab=COMM-cosigned-par-internal] {P \red P'} {\mathsf{\{}P\mathsf{\}}_{s_1 \& s_2} \;\mathsf{|}\; s_{1}:T_{1} \;\mathsf{|}\; s_{2}:T_{2} \red \mathsf{\{}P'\mathsf{\}}_{s} \;\mathsf{|}\; T_{1}\;\mathsf{|}\;T_{2}}  
+  \inferrule* [lab=COMM-cosigned-par-internal] {P \red P'} {\mathsf{\{}P\mathsf{\}}_{s_1 \& s_2} \;\mathsf{|}\; s_{1}:T_{1} \;\mathsf{|}\; s_{2}:T_{2} \red \mathsf{\{}P'\mathsf{\}}_{s_1 \& s_2} \;\mathsf{|}\; T_{1}\;\mathsf{|}\;T_{2}}  
 \end{mathpar}
 
 The last two rules are easy to understand. The third rule says that a
@@ -585,11 +585,27 @@ across security boundaries. The first rule says that for a
 transactional exchange of data where the receiving computation is
 signed by one party and the sending computation is signed by another,
 then a multi-sig token containing the signatures of both parties
-suffices to allow the synchronizatoin. Meanwhile the second rule says
+suffices to allow the synchronization. Meanwhile the second rule says
 that the same situation can progress by taking a token from the
 receiving and a token from the sending parting. Note that the
 resulting computation is now signed by both parties and to progress
 requires tokens from both parties (see rules three and four).
+
+\subsubsection{Unification and other ancillary costs}
+
+More generally, the method described is an endofunctor on the category
+of GSLTs. It is not the only such. For instance, it is worth noting
+that this functor does not take into account the cost of unification,
+which in some cases can be considerable. A basic approach is to demand
+that unification return a cost along with the substitution. The cost
+can be treated as a constant or a multiple of the cost. For example,
+
+\begin{mathpar}
+  \inferrule* [lab=COMM-cosigned-par-external-concurrent] {( \sigma, n ) = \mathsf{unify}(t,u)} {\mathsf{\{}\mathsf{for}( t \sngllrarrow x )P\mathsf{\}}_{s_1} \;\mathsf{|}\; \mathsf{\{} x \mathsf{!}( u )\mathsf{;} Q \mathsf{\}}_{s_2}\;\mathsf{|}\; \underbrace{s_{1} : \ldots : s_{1}}_{n} : T_{1}\;\mathsf{|}\;\underbrace{s_{2} : \ldots : s_{s}}_{n} : T_{1} \\ \red \mathsf{\{}P\sigma\mathsf{|}Q\sigma\mathsf{\}}_{s_1\mathsf{\&}s_2} \;\mathsf{|}\; T_{1} \;\mathsf{|}\; T_{2}} \\
+\end{mathpar}
+
+These techniques can be used liberally to treat all manner of
+additional costs incurred in actual calculations on physical hardware.
 
 \section{Fault-tolerance: embedding the kernel in a consensus mechanism}
 
