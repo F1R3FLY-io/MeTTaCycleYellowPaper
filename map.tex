@@ -752,10 +752,35 @@ container, much like the EVM situates a more or less standard vm into
 a tokenization container; and then wrapping that in a unit of
 fault-tolerance, i.e. a shard governed by a consensus mechanism.
 
-Further, it means integrating the technology into the existing
-technological ecosystem so that users can use the technology as part
-of their day-to-day workflows, both on their machine, and in the
-cloud.
+Unlike the EVM, the $\MC$ architecture goes a long way to
+demonstrating that the vast majority of the wrapper around smart
+contract execution need not by-hand or bespoke software. The
+tokenization mechanism, for example, may be derived directly from the
+operational semantics of a given language. Likewise, once one
+undertands what corresponds to a state change, even in the presence of
+non-determinism, the consensus mechanism may be entirely
+componentized. Regardless of how consensus is achieved what it must
+guarantee is that each node agrees each state change. But a state
+change is captured directly in the rewrite rules of an operational
+semantics. In short, any language may be turned into a smart
+contracting language in a completely automated fashion.
+
+$\MC$ reduces these mathematical facts to practice, ushering a new
+wave of decentralization in which nodes may participate in multiple
+different networks. This promiscuity dramatically increases the
+opportunities for network interoperability, and allows new features to
+be brought from one network to another.
+
+As we have emphasized, however, for the real potential of
+decentralization to be realized it must be integrated into the
+existing technological ecosystem so that users can use the technology
+as part of their day-to-day workflows, both on their machine, and in
+the cloud. Currently, this does require bespoke development. For
+example, the existing workflows involving file systems, as well as
+ones involving social media are completely oblivious to
+tokenization. As a result, integration requires more ad hoc and
+bespoke solutions. Over time, however, who knows, perhaps even these
+integrations can be automated.
 
 
 \begin{thebibliography}{99}
