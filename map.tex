@@ -27,13 +27,13 @@ $\MC$ is the codename for a new decentralized AI platform.  The network will hav
 
 We anticipate at least two interface points between humans and the network; both of these will be based on existing user interfaces with which users are already familiar.  The first is through the operating system, where $\FD$ will be mounted into the filesystem.  The second will be based on existing open source social networking software, currently $\mathsf{BlueSky}$ and $\mathsf{Mastodon}$.
 
-$\MC$, as its name suggests, will feature a version of the MeTTa programming language.  The driving concept for MeTTa is the idea that intelligence opportunistically creates theories of computation to suit the domain in which the intelligence is operating.  $\MC$ intends to connect many theories operating in many domains, and to enable reasoning about these interactions.
+$\MC$, as its name suggests, will feature a version of the $\mathsf{MeTTa}$ programming language.  The driving concept for $\mathsf{MeTTa}$ is the idea that intelligence opportunistically creates theories of computation to suit the domain in which the intelligence is operating.  $\MC$ intends to connect many theories operating in many domains, and to enable reasoning about these interactions.
 
-\subsection{The MeTTa Kernel}
+\subsection{The $\mathsf{MeTTa}$ Kernel}
 
-SingularityNet hopes that MeTTa will be a language in which one can describe a theory of computation and get an efficient interpreter that is suited for smart contracts on a blockchain~\cite{GoertzelMeredith2024}.
+SingularityNet hopes that $\mathsf{MeTTa}$ will be a language in which one can describe a theory of computation and get an efficient interpreter that is suited for smart contracts on a blockchain~\cite{GoertzelMeredith2024}.
 
-Without reproducing much of MeTTa's internals explicitly in the theory, MeTTa currently cannot model different evaluation strategies for lambda calculus, cannot model the semantics of the $\pi$ calculus and other mobile process calculi, and has several other problems preventing it from living up to this vision.  We propose an architecture based on category theoretical concepts that will enable MeTTa to:
+Without reproducing much of $\mathsf{MeTTa}$'s internals explicitly in the theory, $\mathsf{MeTTa}$ currently cannot model different evaluation strategies for lambda calculus, cannot model the semantics of the $\pi$ calculus and other mobile process calculi, and has several other problems preventing it from living up to this vision.  We propose an architecture based on category theoretical concepts that will enable MeTTa to:
 \begin{itemize}
     \item specify the semantics of any discrete theory of computation
     \item generate an efficient interpreter for that theory
@@ -43,11 +43,11 @@ Without reproducing much of MeTTa's internals explicitly in the theory, MeTTa cu
 \end{itemize}
 and more.
 
-Section \ref{Theories of computation} attempts to express some theories of computation in MeTTa and uncovers some problems.  Section \ref{A way forward} describes graph-structured lambda theories (GSLTs), which solve the expressability problems.  Section \ref{Generating an interpreter and a type system} shows how from a GSLT we can generate an efficient interpreter and a sound type system.  The resulting compiled language is concurrent and transactional. Section \ref{Queries} returns to the need to query a fact database and examines the kinds of interesting query one can express in this system.
+Section \ref{Theories of computation} attempts to express some theories of computation in $\mathsf{MeTTa}$ and uncovers some problems.  Section \ref{A way forward} describes graph-structured lambda theories (GSLTs), which solve the expressability problems.  Section \ref{Generating an interpreter and a type system} shows how from a GSLT we can generate an efficient interpreter and a sound type system.  The resulting compiled language is concurrent and transactional. Section \ref{Queries} returns to the need to query a fact database and examines the kinds of interesting query one can express in this system.
 
 \subsection{Decentralization}
 
-Were the deployment of an execution environment for MeTTa SingularityNet's only goal the $\MC$ architecture would comprise the elements above. However, SingularityNet's goals include a decentralized framework for AI, AGI, and ASI. As such, the architecture must also address a security model for deployment of execution outside of the protective womb of a firewall. Further, it must embrace integration with a number of third party services. Despite these additional constraints and their corresponding remedies, $\MC$ must also be accessible and not hidden behind arcane or cryptic command line interfaces.
+Were the deployment of an execution environment for $\mathsf{MeTTa}$ SingularityNet's only goal the $\MC$ architecture would comprise the elements above. However, SingularityNet's goals include a decentralized framework for AI, AGI, and ASI. As such, the architecture must also address a security model for deployment of execution outside of the protective womb of a firewall. Further, it must embrace integration with a number of third party services. Despite these additional constraints and their corresponding remedies, $\MC$ must also be accessible and not hidden behind arcane or cryptic command line interfaces.
 
 To achieve the former we adopt a capabilities driven tokenization model. Access to compute and storage are mediated by (object) capabilities represented as tokens. See the \ref{Security model} for details. To achieve the latter we provide integration of $\MC$ with the file systems for the major operating systems; and, with major social media platforms. See \ref{Deployment and integration}.
 
@@ -159,15 +159,15 @@ to feed-delivered content via tokens. Finally, they can create,
 launch, interact with, shut down, and \emph{share} agents directly
 with each other.
 
-\section{High-performance MeTTa Kernel}
+\section{High-performance $\mathsf{MeTTa}$ Kernel}
 
 \subsection{Theories of computation}
 \label{Theories of computation}
 
-In this section, we attempt to implement a couple of theories of computation in MeTTa and uncover some missing features and some problems with the current implementation.
+In this section, we attempt to implement a couple of theories of computation in $\mathsf{MeTTa}$ and uncover some missing features and some problems with the current implementation.
 
 \subsubsection{The theory of lambda calculus}
-MeTTa can model the operational semantics of certain virtual machines using a pattern similar to those of platforms like K Framework~\cite{kframework}.  Here's a formalization of the lambda calculus in MeTTa, with an evaluation strategy that reduces terms everywhere except under a lambda:
+$\mathsf{MeTTa}$ can model the operational semantics of certain virtual machines using a pattern similar to those of platforms like K Framework~\cite{kframework}.  Here's a formalization of the lambda calculus in $\mathsf{MeTTa}$, with an evaluation strategy that reduces terms everywhere except under a lambda:
 
 \begin{verbatim}
 ; -- The theory of lambda calculus
@@ -195,13 +195,13 @@ MeTTa can model the operational semantics of certain virtual machines using a pa
 ;!(App (Lam omega) (Lam omega)) ; infinite loop
 \end{verbatim}
 
-The theory introduces \verb+T+ as a sort, essentially the generator in the grammar for terms.  It then declares the term constructors: \verb+App+ takes two terms and produces a term, while \verb+Lam+ takes a function from terms to terms and produces a term.  By using a function type, the theory can avoid modeling explicit substitution and alpha equivalence as part of the grammar by bootstrapping \verb+Lam+ using the binders in MeTTa itself.  Finally, the theory declares the beta rule.
+The theory introduces \verb+T+ as a sort, essentially the generator in the grammar for terms.  It then declares the term constructors: \verb+App+ takes two terms and produces a term, while \verb+Lam+ takes a function from terms to terms and produces a term.  By using a function type, the theory can avoid modeling explicit substitution and alpha equivalence as part of the grammar by bootstrapping \verb+Lam+ using the binders in $\mathsf{MeTTa}$ itself.  Finally, the theory declares the beta rule.
 
 Note that there's nothing in the theory corresponding to the rule defining the evaluation strategy:
 
 \[ \frac{{\tt T} \leadsto {\tt T'} \quad {\tt U} \leadsto {\tt U'}}{\mbox{\tt (App T U)} \leadsto \mbox{\tt (App T' U')}}. \]
 
-The evaluation strategy is hardcoded into the MeTTa interpreter.  We could not, for instance, choose to reduce solely in head position:
+The evaluation strategy is hardcoded into the $\mathsf{MeTTa}$ interpreter.  We could not, for instance, choose to reduce solely in head position:
 
 \[ \frac{{\tt T} \leadsto {\tt T'}}{\mbox{\tt (App T U)} \leadsto \mbox{\tt (App T' U)}} \]
 
@@ -209,7 +209,7 @@ or to reduce under a lambda without considerably more machinery.
 
 \subsubsection{The theory of RHO calculus}
 
-Unfortunately, MeTTa is also unable to model the RHO calculus~\cite{MeredithRadestock2005} (a Reflective Higher-Order pi calculus) in a straightforward way:
+Unfortunately, $\mathsf{MeTTa}$ is also unable to model the RHO calculus~\cite{MeredithRadestock2005} (a Reflective Higher-Order pi calculus) in a straightforward way:
 
 \begin{verbatim}
 (: P Sort)
@@ -248,11 +248,11 @@ Unfortunately, MeTTa is also unable to model the RHO calculus~\cite{MeredithRade
 !(Send (chan) (Proc))
 \end{verbatim}
 
-\noindent MeTTa does well at modeling the sorts and term constructors.  There are sorts for Processes and Names of channels, five term constructors, and three rewrite rules.  But RHO calculus terms (as in all pi calculi) should be considered only up to structural congruence.  The term constructors form a commutative monoid under \verb+Par+, where \verb+Zero+ is the unit.  MeTTa has no concept of structural congruence.
+\noindent $\mathsf{MeTTa}$ does well at modeling the sorts and term constructors.  There are sorts for Processes and Names of channels, five term constructors, and three rewrite rules.  But RHO calculus terms (as in all pi calculi) should be considered only up to structural congruence.  The term constructors form a commutative monoid under \verb+Par+, where \verb+Zero+ is the unit.  $\mathsf{MeTTa}$ has no concept of structural congruence.
 
 One could argue that detecting whether two words are in the same equivalence class is, in general, undecidable, and any real implementation would use something like a normal form or a hash table to eliminate the detection problem.  The Rholang interpreter, in fact, uses such a strategy.  But the specific implementation details should not be part of the abstract description of the language.
 
-RHO calculus---like all pi calculi---is a model of concurrent processes, and therefore can have races.  When multiple \verb+Send+s or \verb+Recv+s are competing on the same channel, RHO calculus makes a single nondeterministic choice of the winner of the race.  MeTTa takes all paths, so even very simple RHO calculus programs require exponential space and time to execute on the MeTTa interpreter.
+RHO calculus---like all pi calculi---is a model of concurrent processes, and therefore can have races.  When multiple \verb+Send+s or \verb+Recv+s are competing on the same channel, RHO calculus makes a single nondeterministic choice of the winner of the race.  $\mathsf{MeTTa}$ takes all paths, so even very simple RHO calculus programs require exponential space and time to execute on the $\mathsf{MeTTa}$ interpreter.
 
 Finally, RHO calculus also forbids reduction under a Send.  For example, the term 
 \[\mbox{\tt(Send (chan) Proc)},\]
@@ -262,7 +262,7 @@ should not reduce.  The process \verb+Proc+ will always reduce to \verb+Zero+ if
 
 \subsubsection{Other theories}
 
-Other features missing from MeTTa that impair its ability to implement theories of computation include:
+Other features missing from $\mathsf{MeTTa}$ that impair its ability to implement theories of computation include:
 \begin{itemize}
     \item The lack of a \verb+lambda+ grounded atom for defining functions inline.
     \item No way to force evaluation of a subexpression.
@@ -283,7 +283,7 @@ From any of these theories, we can derive a sound type system.  Because it is de
 
 \subsubsection{Lawvere's algebraic theories}
 
-In his 1963 PhD thesis~\cite{Lawvere1963}, William Lawvere introduced the concept of an ``algebraic theory''.  His interest was in constructing categories of algebraic structures like monoids, groups, rings, fields, and so on.  A presentation of an algebraic theory looks very much like the MeTTa presentation of a theory of computation.
+In his 1963 PhD thesis~\cite{Lawvere1963}, William Lawvere introduced the concept of an ``algebraic theory''.  His interest was in constructing categories of algebraic structures like monoids, groups, rings, fields, and so on.  A presentation of an algebraic theory looks very much like the $\mathsf{MeTTa}$ presentation of a theory of computation.
 
 A presentation of an algebraic theory consists of:
 \begin{itemize}
@@ -353,7 +353,7 @@ The inputs to function symbols in algebraic theories can only have product types
     \item Equations $\beta(f, v)\colon ([f]\; v) \leadsto f(v).$
     \item Equations $\eta(r, x)\colon (s(r)\; x) \leadsto (t(r)\; x).$
 \end{enumerate}
-Items 5 and 8, like the MeTTa theory of lambda calculus above, use the built-in binders of the lambda theory to avoid the boilerplate of explicit substitution and alpha equivalence.  Items 7 and 9 encode the reduction strategy in the same way as the SKI calculus above.
+Items 5 and 8, like the $\mathsf{MeTTa}$ theory of lambda calculus above, use the built-in binders of the lambda theory to avoid the boilerplate of explicit substitution and alpha equivalence.  Items 7 and 9 encode the reduction strategy in the same way as the SKI calculus above.
 
 We can also present the theory of RHO calculus as a GSLT:
 \begin{enumerate}
@@ -389,7 +389,7 @@ Similarly, consider the modal type $[ - \; |\; A ] B$ of RHO processes that when
 
 These modal types will play an important role in the generated type system described in the next section.
 
-\subsection{A GSLT for MeTTa}
+\subsection{A GSLT for $\mathsf{MeTTa}$}
 In the same way that there is a grammar for BNFC, there is a GSLT Th(GSLT) for presenting finitely presentable GSLTs.  It has no rewrites, because it's just describing the grammar of GSLTs.  We can extend Th(GSLT) with a grammar for facts and queries, with rewrites for processing those queries; see section \ref{Queries} below for more details.
 
 \subsubsection{MeTTaIL}
@@ -521,7 +521,7 @@ In the simplest cases, the names on which processes are sending and receiving ge
 
 \subsubsection{$\RS$ and MORK}
 
-MORK (MeTTa Optimal Reduction Kernel) is a powerful functional language for manipulating graph databases in memory. It represents sets of paths using a trie, which can be exponentially smaller than the original dataset.  It can also act on all the paths in a subtrie simultaneously, which can be exponentially faster than mapping over a data set.  MORK was designed with provable efficiency in mind: each operation provides complexity guarantees.  Using MORK lets a programmer make accurate predictions about the computational complexity of a query.
+MORK ($\mathsf{MeTTa}$ Optimal Reduction Kernel) is a powerful functional language for manipulating graph databases in memory. It represents sets of paths using a trie, which can be exponentially smaller than the original dataset.  It can also act on all the paths in a subtrie simultaneously, which can be exponentially faster than mapping over a data set.  MORK was designed with provable efficiency in mind: each operation provides complexity guarantees.  Using MORK lets a programmer make accurate predictions about the computational complexity of a query.
 
 However, MORK does not have any transactional semantics or primitives for concurrency.  As such, $\RS$ and MORK are complementary languages, well-suited to each other.  Rholang 1.2 will embed MORK as a datatype in the same way that it embeds numbers, strings, lists, maps, and sets.  It will also use MORK for unification with patterns in receiving processes instead of merely binding a single variable.
 
@@ -538,7 +538,7 @@ The automatically generated type systems above give us grammars in which to expr
 
 The notion of a theory of computation is very general; one could, for example, model a cell as a computing device where terms are cell states and rewrites involve molecules and cell signaling pathways.  Healthy and diseased cells become types expressible in the type system, and we have modal types corresponding to small molecules that in the context of a diseased cell lead to a healthy cell.
 
-\section{Decentralizing MeTTa}
+\section{Decentralizing $\mathsf{MeTTa}$}
 
 Rholang is an object capapbilities platform.  On a single logical machine like a blockchain, private names created with the \verb+new+ operator are unforgeable\footnote{A capability is forgeable if you can create an instance of it given only bits. Object references in memory safe languages are unforgeable, since even if you have the memory address of an object, there's no way to turn it into an object reference.} bearer tokens for access to a process.  On an open network, the only things that can be transmitted are bits, so names are necessarily forgeable.  But they can be made unguessable, like the long random strings in API keys.
 
@@ -730,7 +730,7 @@ In this file hosting scenario, autonomous AI agents could assist with document i
 
 If we focus just on the language design for $\mathsf{MeTTa}$ we see
 that our proposed architecture addresses the defects of the current
-MeTTa implementation:
+$\mathsf{MeTTa}$ implementation:
 
 \begin{itemize}
     \item GSLTs can specify the semantics of any discrete theory of computation
