@@ -33,9 +33,19 @@ $\MC$, as its name suggests, will feature a version of the $\mathsf{MeTTa}$ prog
 
 \subsection{The $\mathsf{MeTTa}$ Kernel}
 
-SingularityNet hopes that $\mathsf{MeTTa}$ will be a language in which one can describe a theory of computation and get an efficient interpreter that is suited for smart contracts on a blockchain~\cite{GoertzelMeredith2024}.
+SingularityNet hopes that $\mathsf{MeTTa}$ will be a language in which
+one can describe a theory of computation and get an efficient
+interpreter that is suited for smart contracts on a
+blockchain~\cite{GoertzelMeredith2024}.
 
-Without reproducing much of $\mathsf{MeTTa}$'s internals explicitly in the theory, $\mathsf{MeTTa}$ currently cannot model different evaluation strategies for lambda calculus, cannot model the semantics of the $\pi$ calculus and other mobile process calculi, and has several other problems preventing it from living up to this vision.  We propose an architecture based on category theoretical concepts that will enable MeTTa to:
+Without reproducing much of $\mathsf{MeTTa}$'s internals explicitly in
+the theory, the $0.1$ version of $\mathsf{MeTTa}$ has limitations with
+respect to the ultimate goals for the language. Currently, the
+research version cannot model different evaluation strategies for
+lambda calculus, cannot model the semantics of the $\pi$ calculus and
+other mobile process calculi, and has several other problems
+preventing it from living up to this vision.  We propose an
+architecture based on category theoretical concepts that will enable the next version of $\mathsf{MeTTa}$ to:
 \begin{itemize}
     \item specify the semantics of any discrete theory of computation
     \item generate an efficient interpreter for that theory
@@ -45,15 +55,46 @@ Without reproducing much of $\mathsf{MeTTa}$'s internals explicitly in the theor
 \end{itemize}
 and more.
 
-Section \ref{Theories of computation} attempts to express some theories of computation in $\mathsf{MeTTa}$ and uncovers some problems.  Section \ref{A way forward} describes graph-structured lambda theories (GSLTs), which solve the expressability problems.  Section \ref{Generating an interpreter and a type system} shows how from a GSLT we can generate an efficient interpreter and a sound type system.  The resulting compiled language is concurrent and transactional. Section \ref{Queries} returns to the need to query a fact database and examines the kinds of interesting query one can express in this system.
+Section \ref{Theories of computation} attempts to express some
+theories of computation in the research version of $\mathsf{MeTTa}$ to
+illustrate some of its limitations.  Section \ref{A way forward}
+describes graph-structured lambda theories (GSLTs), which lifts these
+expressability limitations.  Section \ref{Generating an interpreter
+  and a type system} shows how from a GSLT we can generate an
+efficient interpreter and a sound type system.  The resulting compiled
+language is concurrent and transactional. Section \ref{Queries}
+returns to the need to query a fact database and examines the kinds of
+interesting query one can express in this system.
 
 \subsection{Decentralization}
 
-Were the deployment of an execution environment for $\mathsf{MeTTa}$ SingularityNet's only goal the $\MC$ architecture would comprise the elements above. However, SingularityNet's goals include a decentralized framework for AI, AGI, and ASI. As such, the architecture must also address a security model for deployment of execution outside of the protective womb of a firewall. Further, it must embrace integration with a number of third party services. Despite these additional constraints and their corresponding remedies, $\MC$ must also be accessible and not hidden behind arcane or cryptic command line interfaces.
+Were the deployment of an execution environment for $\mathsf{MeTTa}$
+SingularityNet's only goal the $\MC$ architecture would comprise the
+elements above. However, SingularityNet's goals include a
+decentralized framework for AI, AGI, and ASI. As such, the
+architecture must also address a security model for deployment of
+execution outside of the protective womb of a firewall. Further, it
+must embrace integration with a number of third party
+services. Despite these additional constraints and their corresponding
+remedies, $\MC$ must also be accessible and not hidden behind arcane
+or cryptic command line interfaces.
 
-To achieve the former we adopt a capabilities driven tokenization model. Access to compute and storage are mediated by (object) capabilities represented as tokens. See the \ref{Security model} for details. To achieve the latter we provide integration of $\MC$ with the file systems for the major operating systems; and, with major social media platforms. See \ref{Deployment and integration}.
+To achieve the former we adopt a capabilities driven tokenization
+model. Access to compute and storage are mediated by (object)
+capabilities represented as tokens. See the \ref{Security model} for
+details. To achieve the latter we provide integration of $\MC$ with
+the file systems for the major operating systems; and, with major
+social media platforms. See \ref{Deployment and integration}.
 
-Finally, to achieve decentralization the $\MC$ architecture needs to include fault-tolerance balanced against the need to replicate data everywhere. It achieves this by delivering a sharded, heterogeneous consensus mechanism. Each shard represents a unit of fault-tolerance governed by a consensus mechanism. Shards may be organized into a tree. Parent shards delegate to children when transactions only involve resources confined to a single child shard, but provide a governing consensus for transactions that implicate resources spanning sibling shards.
+Finally, to achieve decentralization the $\MC$ architecture needs to
+include fault-tolerance balanced against the need to replicate data
+everywhere. It achieves this by delivering a sharded, heterogeneous
+consensus mechanism. Each shard represents a unit of fault-tolerance
+governed by a consensus mechanism. Shards may be organized into a
+tree. Parent shards delegate to children when transactions only
+involve resources confined to a single child shard, but provide a
+governing consensus for transactions that implicate resources spanning
+sibling shards.
 
 \section{Market requirements}
 
@@ -191,8 +232,8 @@ data on chain or agents on chain to other networks.
 \label{Theories of computation}
 
 In this section, we attempt to implement a couple of theories of
-computation in $\mathsf{MeTTa}$ and uncover some missing features and
-some problems with the current implementation.
+computation in the research version of $\mathsf{MeTTa}$ and uncover
+some missing features and limitations with the current implementation.
 
 \subsubsection{The theory of lambda calculus}
 $\mathsf{MeTTa}$ can model the operational semantics of certain
@@ -227,13 +268,23 @@ terms everywhere except under a lambda:
 ;!(App (Lam omega) (Lam omega)) ; infinite loop
 \end{verbatim}
 
-The theory introduces \verb+T+ as a sort, essentially the generator in the grammar for terms.  It then declares the term constructors: \verb+App+ takes two terms and produces a term, while \verb+Lam+ takes a function from terms to terms and produces a term.  By using a function type, the theory can avoid modeling explicit substitution and alpha equivalence as part of the grammar by bootstrapping \verb+Lam+ using the binders in $\mathsf{MeTTa}$ itself.  Finally, the theory declares the beta rule.
+The theory introduces \verb+T+ as a sort, essentially the generator in
+the grammar for terms.  It then declares the term constructors:
+\verb+App+ takes two terms and produces a term, while \verb+Lam+ takes
+a function from terms to terms and produces a term.  By using a
+function type, the theory can avoid modeling explicit substitution and
+alpha equivalence as part of the grammar by bootstrapping \verb+Lam+
+using the binders in $\mathsf{MeTTa}$ itself.  Finally, the theory
+declares the beta rule.
 
-Note that there's nothing in the theory corresponding to the rule defining the evaluation strategy:
+Note that there's nothing in the theory corresponding to the rule
+defining the evaluation strategy:
 
 \[ \frac{{\tt T} \leadsto {\tt T'} \quad {\tt U} \leadsto {\tt U'}}{\mbox{\tt (App T U)} \leadsto \mbox{\tt (App T' U')}}. \]
 
-The evaluation strategy is hardcoded into the $\mathsf{MeTTa}$ interpreter.  We could not, for instance, choose to reduce solely in head position:
+The evaluation strategy is hardcoded into the $\mathsf{MeTTa}$
+interpreter.  We could not, for instance, choose to reduce solely in
+head position:
 
 \[ \frac{{\tt T} \leadsto {\tt T'}}{\mbox{\tt (App T U)} \leadsto \mbox{\tt (App T' U)}} \]
 
@@ -241,7 +292,9 @@ or to reduce under a lambda without considerably more machinery.
 
 \subsubsection{The theory of RHO calculus}
 
-Unfortunately, $\mathsf{MeTTa}$ is also unable to model the RHO calculus~\cite{MeredithRadestock2005} (a Reflective Higher-Order pi calculus) in a straightforward way:
+Unfortunately, the research version of $\mathsf{MeTTa}$ is also unable
+to model the RHO calculus~\cite{MeredithRadestock2005} (a Reflective
+Higher-Order pi calculus) in a straightforward way:
 
 \begin{verbatim}
 (: P Sort)
@@ -280,11 +333,28 @@ Unfortunately, $\mathsf{MeTTa}$ is also unable to model the RHO calculus~\cite{M
 !(Send (chan) (Proc))
 \end{verbatim}
 
-\noindent $\mathsf{MeTTa}$ does well at modeling the sorts and term constructors.  There are sorts for Processes and Names of channels, five term constructors, and three rewrite rules.  But RHO calculus terms (as in all pi calculi) should be considered only up to structural congruence.  The term constructors form a commutative monoid under \verb+Par+, where \verb+Zero+ is the unit.  $\mathsf{MeTTa}$ has no concept of structural congruence.
+\noindent $\mathsf{MeTTa}$ does well at modeling the sorts and term
+constructors.  There are sorts for Processes and Names of channels,
+five term constructors, and three rewrite rules.  But RHO calculus
+terms (as in all pi calculi) should be considered only up to
+structural congruence.  The term constructors form a commutative
+monoid under \verb+Par+, where \verb+Zero+ is the unit.
+$\mathsf{MeTTa}$ has no concept of structural congruence.
 
-One could argue that detecting whether two words are in the same equivalence class is, in general, undecidable, and any real implementation would use something like a normal form or a hash table to eliminate the detection problem.  The Rholang interpreter, in fact, uses such a strategy.  But the specific implementation details should not be part of the abstract description of the language.
+One could argue that detecting whether two words are in the same
+equivalence class is, in general, undecidable, and any real
+implementation would use something like a normal form or a hash table
+to eliminate the detection problem.  The Rholang interpreter, in fact,
+uses such a strategy.  But the specific implementation details should
+not be part of the abstract description of the language.
 
-RHO calculus---like all pi calculi---is a model of concurrent processes, and therefore can have races.  When multiple \verb+Send+s or \verb+Recv+s are competing on the same channel, RHO calculus makes a single nondeterministic choice of the winner of the race.  $\mathsf{MeTTa}$ takes all paths, so even very simple RHO calculus programs require exponential space and time to execute on the $\mathsf{MeTTa}$ interpreter.
+RHO calculus---like all pi calculi---is a model of concurrent
+processes, and therefore can have races.  When multiple \verb+Send+s
+or \verb+Recv+s are competing on the same channel, RHO calculus makes
+a single nondeterministic choice of the winner of the race.
+$\mathsf{MeTTa}$ takes all paths, so even very simple RHO calculus
+programs require exponential space and time to execute on the research
+version of $\mathsf{MeTTa}$ interpreter.
 
 Finally, RHO calculus also forbids reduction under a Send.  For example, the term 
 \[\mbox{\tt(Send (chan) Proc)},\]
@@ -294,7 +364,7 @@ should not reduce.  The process \verb+Proc+ will always reduce to \verb+Zero+ if
 
 \subsubsection{Other theories}
 
-Other features missing from $\mathsf{MeTTa}$ that impair its ability to implement theories of computation include:
+Other features missing from the research version of $\mathsf{MeTTa}$ that impair its ability to implement theories of computation include:
 \begin{itemize}
     \item The lack of a \verb+lambda+ grounded atom for defining functions inline.
     \item No way to force evaluation of a subexpression.
@@ -309,13 +379,30 @@ Other features missing from $\mathsf{MeTTa}$ that impair its ability to implemen
 \subsection{A way forward}
 \label{A way forward}
 
-The mathematician William Lawvere's research underpins all approaches to formalizing theories of computation, so we review his contributions and more recent generalizations below.  In this section, we show how to use these theories to generate a reduction graph for a theory of computation.  The vertices of the graph are the possible states the computation can be in, and the edges are the possible state transitions.  The section culminates in the notion of an interactive graph-structured lambda theory (GSLT), which provides a language for expressing computational theories that includes the ability to express reduction strategies.  
+The mathematician William Lawvere's research underpins all approaches
+to formalizing theories of computation, so we review his contributions
+and more recent generalizations below.  In this section, we show how
+to use these theories to generate a reduction graph for a theory of
+computation.  The vertices of the graph are the possible states the
+computation can be in, and the edges are the possible state
+transitions.  The section culminates in the notion of an interactive
+graph-structured lambda theory (GSLT), which provides a language for
+expressing computational theories that includes the ability to express
+reduction strategies.
 
-From any of these theories, we can derive a sound type system.  Because it is derived rather than invented, it allows an intelligence to have type systems for interacting theories of computation and to rederive them when it develops a new theory for some domain.
+From any of these theories, we can derive a sound type system.
+Because it is derived rather than invented, it allows an intelligence
+to have type systems for interacting theories of computation and to
+rederive them when it develops a new theory for some domain.
 
 \subsubsection{Lawvere's algebraic theories}
 
-In his 1963 PhD thesis~\cite{Lawvere1963}, William Lawvere introduced the concept of an ``algebraic theory''.  His interest was in constructing categories of algebraic structures like monoids, groups, rings, fields, and so on.  A presentation of an algebraic theory looks very much like the $\mathsf{MeTTa}$ presentation of a theory of computation.
+In his 1963 PhD thesis~\cite{Lawvere1963}, William Lawvere introduced
+the concept of an ``algebraic theory''.  His interest was in
+constructing categories of algebraic structures like monoids, groups,
+rings, fields, and so on.  A presentation of an algebraic theory looks
+very much like the $\mathsf{MeTTa}$ presentation of a theory of
+computation.
 
 A presentation of an algebraic theory consists of:
 \begin{itemize}
@@ -434,9 +521,10 @@ below for more details.
 $\mathsf{MeTTaIL}$ takes the idea presented above of a self-describing
 GSLT for describing GSLTs seriously, and provides a clean intermediate
 language for representing theories in a way that is more
-compiler-friendly than the original $\mathsf{MeTTa}$ design. That is,
-$\mathsf{MeTTaIL}$ files represent compilation units in much the same
-way that a file in $\mathsf{Java}$ represents a compilation unit.
+compiler-friendly than the research version of $\mathsf{MeTTa}$'s
+design. That is, $\mathsf{MeTTaIL}$ files represent compilation units
+in much the same way that a file in $\mathsf{Java}$ represents a
+compilation unit.
 
 Beyond this, $\mathsf{MeTTaIL}$ is the input language for the
 algorithm for generating an interpreter and the algorithm for
@@ -1483,5 +1571,178 @@ All other symbols are terminals.\\
 \begin{tabular}{lll}
 {\nonterminal{Hypothesis}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{\~{}{$>$}}} {\nonterminal{Ident}}  \\
 \end{tabular}\\
+
+\section{Appendix B: Examples of $\mathsf{MeTTaIL}$}
+
+\begin{verbatim}
+//UnivAlg.module file contents
+Module UnivAlg {
+  Theory TwoPoint() {
+    Empty
+      Exports {
+        Proc;
+      }
+      Terms {
+        One . Proc ::= "1" ;
+        Two . Proc ::= "2" ;
+      }
+  }
+
+  Theory Monoid() {
+    Empty
+      Exports {
+        Proc;
+      }
+      Terms {
+        One . Proc ::= "1" ;
+        Mult . Proc ::= "(" Proc "*" Proc ")" ;
+      }
+      Equations {
+        (Mult (Mult x y) z) == (Mult x (Mult y z));
+        (Mult x (One)) == x;
+        (Mult (One) x) == x;
+      }
+  }
+
+  Theory CommutativeMonoid(m: u.Monoid) {
+    m
+      Replacements {
+        [] One . Proc => Zero . Proc ::= "0" ;
+        [0, 1] Mult . Proc => Plus . Proc ::= "(" Proc "+" Proc ")" ;
+      }
+      Equations {
+        (Plus x y) == (Plus y x);
+      }
+  }
+  
+  Theory Rig(add: CommutativeMonoid, mult: Monoid) {
+    {add \/ mult}
+      Equations {
+        (Mult x (Plus y z)) == (Plus (Mult x y) (Mult x z));
+        (Mult (Plus x y) z) == (Plus (Mult x z) (Mult y z));
+        (Mult x (Zero)) == (Zero);
+        (Mult (Zero) x) == (Zero);
+      }
+  }
+
+  Theory Group(m: Monoid) {
+    m
+      Terms {
+        Inv . Proc ::= "inv" "(" Proc ")" ;
+      }
+      Equations {
+        (Mult x (Inv x)) == (One);
+        (Inv (Inv x)) == x;
+        (Inv (Mult x y)) == (Mult (Inv y) (Inv x));
+      }
+  }
+
+  Theory AbelianGroup(g: Group, c: CommutativeMonoid) {
+    g
+      Replacements {
+        [] One . Proc => Zero . Proc ::= "0" ;
+        [0, 1] Mult . Proc => Plus . Proc ::= "(" Proc "+" Proc ")" ;
+        [0] Inv . Proc => Neg . Proc ::= "(" "-" Proc ")" ;
+      } \/ c
+  }
+
+  Theory Ring(r: Rig, add: AbelianGroup) {
+    r \/ add
+  }
+  
+  theory TwoPoint() \/ Monoid()
+}
+
+//Rholang.module file contents
+
+import Monoid from "UnivAlg.module"
+
+Module Rholang {
+  Theory ParMonoid(cm: u.CommutativeMonoid) {
+    cm
+      Replacements {
+        [] Zero.Proc => PZero.Proc ::= "0";
+        [0, 1] Plus.Proc => PPar.Proc ::= "(" Proc "|" Proc ")";
+      }
+      Rewrites {
+        RPar1 : let Src ~> Tgt in
+                ( PPar Src Q ) ~> ( PPar Tgt Q ) ;
+        RPar2 : let Src1 ~> Tgt1 in
+                let Src2 ~> Tgt2 in
+                ( PPar Src1 Src2 ) ~> ( PPar Tgt1 Tgt2 ) ;
+      }
+  }
+
+  Theory NewReplCalc(pm: ParMonoid) {
+    pm
+      Exports {
+        Name ;
+      }
+      Terms {
+        PRepl . Proc ::= "!" Proc ;
+        PNew  . Proc ::= "new" (Bind Name [1]) "in" Proc ;
+      }
+      Equations {
+        if x # Q then
+          ( PPar ( PNew x P ) Q ) == ( PNew x ( PPar P Q ) ) ;
+        ( PNew x ( PNew x P ) ) == ( PNew x P ) ;
+        ( PNew x ( PNew y P ) ) == ( PNew y ( PNew x P ) ) ;
+        ( PRepl P ) == ( PPar P ( PRepl P ) ) ;
+      }
+      Rewrites {
+        RNew  : let Src ~> Tgt in
+                (PNew x Src) ~> (PNew x Tgt) ;
+      }
+  }
+ 
+  Theory QuoteDropCalc(pm: ParMonoid) {
+    pm
+      Exports {
+        Name ;
+      }
+      Terms {
+        PDrop . Proc ::= "*" Name ;
+        NQuote . Name ::= "@" Proc ;
+      }
+      Equations {
+        ( NQuote ( PDrop N ) ) == N ;
+        ( PDrop ( NQuote P ) ) == P ;
+      }
+  }
+
+  Theory RhoCalc(qd: QuoteDropCalc) {
+    qd
+      Terms {
+        PSend . Proc ::= Name "!" "(" Proc ")" ;
+        PRecv . Proc ::= "for" "(" (Bind Name [2]) "<-" Name ")" "{" Proc "}" ;
+      }
+      Rewrites {
+        RComm : ( PPar ( PRecv y x P) ( PSend x Q ) ) ~> ( Subst P ( NQuote Q ) y ) ;
+      }
+  }
+
+  Theory Rholang(nr: NewReplCalc, r: RhoCalc) {
+    nr \/ r
+  }
+  
+  Theory FreeRholang() {
+    let m = Monoid() in (
+    let cm = CommutativeMonoid(m) in (
+    let pm = ParMonoid(cm) in (
+    let qd = QuoteDropCalc(pm) in (
+    let nr = NewReplCalc(pm) in (
+    let rc = Rhocalc(qd) in (
+    let rl = Rholang(nr, rc) in (
+    r1
+    )))))))
+  }
+
+  -- theory free(Monoid)
+  -- theory free(Rholang)
+  -- theory let x = Empty Exports { Foo; } in (x Exports { Bar; })
+  theory Monoid()
+}
+\end{verbatim}
+
 
 \end{document}
