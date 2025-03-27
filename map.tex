@@ -2,6 +2,8 @@
 \usepackage{amsmath, amssymb, hyperref}
 \usepackage{graphicx}
 \usepackage {mathpartir}
+\usepackage[T1]{fontenc}
+%% \usepackage[utf8x]{inputenc}
 
 \include{map.local} 
 
@@ -144,7 +146,7 @@ $\mathsf{GoogleDrive}$.
 Beyond this, a dominant mode of interaction between users is social
 media. People have been trained on $\mathsf{Twitter}$,
 $\mathsf{Facebook}$, and the like for more than a decade. $\MC$
-recognies this fact of user behavior in the market place. Already the
+recognizes this fact of user behavior in the market place. Already the
 platform is demonstrating integration with $\mathsf{BlueSky}$ so that
 $\MC$ acts as a backbone between independent $\mathsf{BlueSky}$
 instances.
@@ -168,11 +170,11 @@ operating in different divisions of a single company and it becomes
 useful or necessary to have these instances interoperate to serve use
 cases that cross these divisions. A similar sort of scenario arises
 when rolling out different versions of a single network. In the second
-case use cases may span multiple networks, travel being a prime
-example. One can easily imagine the airlines settle on one network,
-while the hospitality providers settle on another. The user doesn't
-actually care. They just want to book a trip including airfare and
-hospitality.
+case user network interactions may span multiple networks, travel
+being a prime example. One can easily imagine the airlines settle on
+one network, while the hospitality providers settle on another. The
+user doesn't actually care. They just want to book a trip including
+airfare and hospitality.
 
 On the one hand $\MC$ is designed to be compositional. Shards can be
 stitched togher into larger networks. On the other hand, the
@@ -180,18 +182,24 @@ channel-based model of $\MC$ makes it possible to treat other networks
 as if they were shards. Still $\MC$ has larger aims. As will be
 discussed, the technology offered here makes it possible for $\MC$
 nodes to participate as first class citizens in other networks. This
-opens up a new world of possibilities for how to bring features to
-other networks.
+opens up a new world of possibilities for how to bring features, like
+data on chain or agents on chain to other networks.
 
 \section{High-performance $\mathsf{MeTTa}$ Kernel}
 
 \subsection{Theories of computation}
 \label{Theories of computation}
 
-In this section, we attempt to implement a couple of theories of computation in $\mathsf{MeTTa}$ and uncover some missing features and some problems with the current implementation.
+In this section, we attempt to implement a couple of theories of
+computation in $\mathsf{MeTTa}$ and uncover some missing features and
+some problems with the current implementation.
 
 \subsubsection{The theory of lambda calculus}
-$\mathsf{MeTTa}$ can model the operational semantics of certain virtual machines using a pattern similar to those of platforms like K Framework~\cite{kframework}.  Here's a formalization of the lambda calculus in $\mathsf{MeTTa}$, with an evaluation strategy that reduces terms everywhere except under a lambda:
+$\mathsf{MeTTa}$ can model the operational semantics of certain
+virtual machines using a pattern similar to those of platforms like K
+Framework~\cite{kframework}.  Here's a formalization of the lambda
+calculus in $\mathsf{MeTTa}$, with an evaluation strategy that reduces
+terms everywhere except under a lambda:
 
 \begin{verbatim}
 ; -- The theory of lambda calculus
@@ -414,16 +422,21 @@ Similarly, consider the modal type $[ - \; |\; A ] B$ of RHO processes that when
 These modal types will play an important role in the generated type system described in the next section.
 
 \subsection{A GSLT for $\mathsf{MeTTa}$}
-In the same way that there is a grammar for BNFC, there is a GSLT Th(GSLT) for presenting finitely presentable GSLTs.  It has no rewrites, because it's just describing the grammar of GSLTs.  We can extend Th(GSLT) with a grammar for facts and queries, with rewrites for processing those queries; see section \ref{Queries} below for more details.
+In the same way that there is a grammar for BNFC, there is a GSLT
+$\mathsf{Th}(GSLT)$ for presenting finitely presentable GSLTs.  It has
+no rewrites, because it's just describing the grammar of GSLTs.  We
+can extend $\mathsf{Th}(GSLT)$ with a grammar for facts and queries,
+with rewrites for processing those queries; see section \ref{Queries}
+below for more details.
 
 \subsubsection{MeTTaIL}
 
-$\mathsf{MeTTaIL}$ takes the idea present above seriously and provides
-a clean intermediate language for representing theories in a way that
-is more compiler-friendly than the original $\mathsf{MeTTa}$
-design. That is, $\mathsf{MeTTaIL}$ files represent compilation units
-in much the same way that a file in $\mathsf{Java}$ represents a
-compilation unit.
+$\mathsf{MeTTaIL}$ takes the idea presented above of a self-describing
+GSLT for describing GSLTs seriously, and provides a clean intermediate
+language for representing theories in a way that is more
+compiler-friendly than the original $\mathsf{MeTTa}$ design. That is,
+$\mathsf{MeTTaIL}$ files represent compilation units in much the same
+way that a file in $\mathsf{Java}$ represents a compilation unit.
 
 Beyond this, $\mathsf{MeTTaIL}$ is the input language for the
 algorithm for generating an interpreter and the algorithm for
@@ -884,4 +897,591 @@ Trimble, Todd (2018).
 Williams, Christian, and Michael Stay (2021). ``Native Type Theory.'' \emph{Proceedings of the Fourth Annual Conference on Applied Category Theory}. EPTCS 372 (2022), 116--132.
 
 \end{thebibliography}
+
+\section{Appendix A: A Summary of $\mathsf{MeTTaIL}$}
+
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{1mm}
+
+\newcommand{\emptyP}{\mbox{$\epsilon$}}
+\newcommand{\terminal}[1]{\mbox{{\texttt {#1}}}}
+\newcommand{\nonterminal}[1]{\mbox{$\langle \mbox{{\sl #1 }} \! \rangle$}}
+\newcommand{\arrow}{\mbox{::=}}
+\newcommand{\delimit}{\mbox{$|$}}
+\newcommand{\reserved}[1]{\mbox{{\texttt {#1}}}}
+\newcommand{\literal}[1]{\mbox{{\texttt {#1}}}}
+\newcommand{\symb}[1]{\mbox{{\texttt {#1}}}}
+
+This appendix was automatically generated by the {\em BNF-Converter}.
+It was generated together with the lexer, the parser, and the
+abstract syntax module, which guarantees that the document
+matches with the implementation of the language
+(provided no hand-hacking has taken place).
+
+\section{The lexical structure of $\mathsf{MeTTaIL}$}
+
+\subsection{Identifiers}
+Identifiers \nonterminal{Ident} are unquoted strings beginning with a letter,
+followed by any combination of letters, digits, and the characters {\tt \_ '},
+reserved words excluded.
+\subsection{Literals}
+Character literals \nonterminal{Char}\ have the form
+\terminal{'}$c$\terminal{'}, where $c$ is any single character.
+
+Integer literals \nonterminal{Int}\ are nonempty sequences of digits.
+
+String literals \nonterminal{String}\ have the form
+\terminal{"}$x$\terminal{"}, where $x$ is any sequence of any characters
+except \terminal{"}\ unless preceded by \verb6\6.
+
+\subsection{Reserved words and symbols}
+The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
+
+The reserved words used in $\mathsf{MeTTaIL}$ are the following: \\
+
+\begin{tabular}{lll}
+{\reserved{Bind}} &{\reserved{Empty}} &{\reserved{Equations}} \\
+{\reserved{Exports}} &{\reserved{Module}} &{\reserved{NilSpace}} \\
+{\reserved{Replacements}} &{\reserved{Rewrites}} &{\reserved{Space}} \\
+{\reserved{Subst}} &{\reserved{Terms}} &{\reserved{Theory}} \\
+{\reserved{as}} &{\reserved{char}} &{\reserved{coercions}} \\
+{\reserved{comment}} &{\reserved{digit}} &{\reserved{entrypoints}} \\
+{\reserved{eps}} &{\reserved{for}} &{\reserved{free}} \\
+{\reserved{from}} &{\reserved{if}} &{\reserved{import}} \\
+{\reserved{in}} &{\reserved{inf}} &{\reserved{internal}} \\
+{\reserved{layout}} &{\reserved{let}} &{\reserved{letter}} \\
+{\reserved{lower}} &{\reserved{nonempty}} &{\reserved{position}} \\
+{\reserved{rules}} &{\reserved{self}} &{\reserved{separator}} \\
+{\reserved{space}} &{\reserved{stop}} &{\reserved{sup}} \\
+{\reserved{tail}} &{\reserved{terminator}} &{\reserved{then}} \\
+{\reserved{theory}} &{\reserved{token}} &{\reserved{toplevel}} \\
+{\reserved{upper}} & & \\
+\end{tabular}\\
+
+The symbols used in $\mathsf{MeTTaIL}$ are the following: \\
+
+\begin{tabular}{lll}
+{\symb{\{}} &{\symb{\}}} &{\symb{(}} \\
+{\symb{)}} &{\symb{{$=$}{$>$}}} &{\symb{{$=$}}} \\
+{\symb{::}} &{\symb{/$\backslash$}} &{\symb{$\backslash$/}} \\
+{\symb{$\backslash$}} &{\symb{{$<$}{$|$}}} &{\symb{**}} \\
+{\symb{{$|$}}} &{\symb{,}} &{\symb{:}} \\
+{\symb{.}} &{\symb{\_}} &{\symb{...}} \\
+{\symb{@}} &{\symb{;}} &{\symb{!?}} \\
+{\symb{{$<$}{$-$}}} &{\symb{\&}} &{\symb{?!}} \\
+{\symb{{$<$}{$=$}}} &{\symb{{$<$}{$<$}{$-$}}} &{\symb{{$<$}{$-$}{$>$}}} \\
+{\symb{{$<$}{$=$}{$>$}}} &{\symb{{$<$}{$<$}{$-$}{$>$}{$>$}}} &{\symb{!}} \\
+{\symb{!!}} &{\symb{!\$}} &{\symb{::{$=$}}} \\
+{\symb{[}} &{\symb{]}} &{\symb{{$-$}}} \\
+{\symb{*}} &{\symb{{$+$}}} &{\symb{?}} \\
+{\symb{\#}} &{\symb{{$=$}{$=$}}} &{\symb{\~{}{$>$}}} \\
+\end{tabular}\\
+
+\subsection{Comments}
+Single-line comments begin with {\symb{{$-$}{$-$}}}. \\Multiple-line comments are  enclosed with {\symb{\{{$-$}}} and {\symb{{$-$}\}}}.
+
+\section{The syntactic structure of $\mathsf{MeTTaIL}$}
+
+
+Non-terminals are enclosed between $\langle$ and $\rangle$.
+The symbols  {\arrow}  (production),  {\delimit}  (union)
+and {\emptyP} (empty rule) belong to the BNF notation.
+All other symbols are terminals.\\
+
+\begin{tabular}{lll}
+{\nonterminal{Module}} & {\arrow}  &{\nonterminal{ListImport}} {\terminal{Module}} {\nonterminal{Name}} {\terminal{\{}} {\nonterminal{ListProg}} {\terminal{\}}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Import}} & {\arrow}  &{\terminal{import}} {\nonterminal{String}} {\terminal{as}} {\nonterminal{Ident}}  \\
+ & {\delimit}  &{\terminal{import}} {\nonterminal{Ident}} {\terminal{from}} {\nonterminal{String}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListImport}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Import}} {\nonterminal{ListImport}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Prog}} & {\arrow}  &{\nonterminal{SpaceDecl}}  \\
+ & {\delimit}  &{\nonterminal{TheoryDecl}}  \\
+ & {\delimit}  &{\terminal{space}} {\nonterminal{SpaceInst}}  \\
+ & {\delimit}  &{\terminal{theory}} {\nonterminal{TheoryInst}}  \\
+ & {\delimit}  &{\nonterminal{FactComprehension}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListProg}} & {\arrow}  &{\nonterminal{Prog}}  \\
+ & {\delimit}  &{\nonterminal{Prog}} {\nonterminal{ListProg}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst}} & {\arrow}  &{\nonterminal{SpaceInst1}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst}} {\terminal{{$|$}}} {\nonterminal{SpaceInst1}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst1}} & {\arrow}  &{\nonterminal{SpaceInst2}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst1}} {\terminal{**}} {\nonterminal{SpaceInst2}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst2}} & {\arrow}  &{\nonterminal{SpaceInst3}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst2}} {\terminal{{$<$}{$|$}}} {\nonterminal{SpaceInst3}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst3}} & {\arrow}  &{\nonterminal{SpaceInst4}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst3}} {\terminal{$\backslash$}} {\nonterminal{SpaceInst4}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst4}} & {\arrow}  &{\nonterminal{SpaceInst5}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst4}} {\terminal{$\backslash$/}} {\nonterminal{SpaceInst5}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst5}} & {\arrow}  &{\nonterminal{SpaceInst6}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst5}} {\terminal{/$\backslash$}} {\nonterminal{SpaceInst6}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst6}} & {\arrow}  &{\nonterminal{SpaceInst7}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst6}} {\terminal{::}} {\nonterminal{SpaceInst7}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceInst7}} & {\arrow}  &{\terminal{\{}} {\nonterminal{SpaceInst}} {\terminal{\}}}  \\
+ & {\delimit}  &{\terminal{NilSpace}}  \\
+ & {\delimit}  &{\nonterminal{DottedPath}} {\terminal{(}} {\nonterminal{ListSpaceInst}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst7}} {\terminal{{$=$}{$>$}}} {\terminal{\{}} {\nonterminal{ListProg}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\terminal{let}} {\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{SpaceInst7}} {\terminal{in}} {\terminal{(}} {\nonterminal{SpaceInst7}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{tail}} {\terminal{(}} {\nonterminal{SpaceInst7}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{sup}} {\terminal{(}} {\nonterminal{SpaceInst7}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{inf}} {\terminal{(}} {\nonterminal{SpaceInst7}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListSpaceInst}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{SpaceInst}}  \\
+ & {\delimit}  &{\nonterminal{SpaceInst}} {\terminal{,}} {\nonterminal{ListSpaceInst}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst}} & {\arrow}  &{\nonterminal{TheoryInst1}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst1}} & {\arrow}  &{\nonterminal{TheoryInst2}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst1}} {\terminal{{$<$}{$|$}}} {\nonterminal{TheoryInst2}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst2}} & {\arrow}  &{\nonterminal{TheoryInst3}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst2}} {\terminal{$\backslash$}} {\nonterminal{TheoryInst3}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst3}} & {\arrow}  &{\nonterminal{TheoryInst4}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst3}} {\terminal{$\backslash$/}} {\nonterminal{TheoryInst4}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst4}} & {\arrow}  &{\nonterminal{TheoryInst5}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst4}} {\terminal{/$\backslash$}} {\nonterminal{TheoryInst5}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst5}} & {\arrow}  &{\nonterminal{TheoryInst6}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst5}} {\terminal{Exports}} {\terminal{\{}} {\nonterminal{ListExport}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst5}} {\terminal{Replacements}} {\terminal{\{}} {\nonterminal{ListReplacement}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst5}} {\terminal{Terms}} {\terminal{\{}} {\nonterminal{Grammar}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst5}} {\terminal{Equations}} {\terminal{\{}} {\nonterminal{ListEquation}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst5}} {\terminal{Rewrites}} {\terminal{\{}} {\nonterminal{ListRewriteDecl}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{DottedPath}} {\terminal{(}} {\nonterminal{ListTheoryInst}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\terminal{let}} {\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{TheoryInst5}} {\terminal{in}} {\terminal{(}} {\nonterminal{TheoryInst5}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{free}} {\terminal{(}} {\nonterminal{DottedPath}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryInst6}} & {\arrow}  &{\terminal{\{}} {\nonterminal{TheoryInst}} {\terminal{\}}}  \\
+ & {\delimit}  &{\terminal{Empty}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListTheoryInst}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{TheoryInst}}  \\
+ & {\delimit}  &{\nonterminal{TheoryInst}} {\terminal{,}} {\nonterminal{ListTheoryInst}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SpaceDecl}} & {\arrow}  &{\terminal{Space}} {\nonterminal{Name}} {\terminal{(}} {\nonterminal{ListVariableDecl}} {\terminal{)}} {\terminal{\{}} {\nonterminal{ListFact}} {\nonterminal{ListFactComprehension}} {\terminal{\}}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{TheoryDecl}} & {\arrow}  &{\terminal{Theory}} {\nonterminal{Name}} {\terminal{(}} {\nonterminal{ListVariableDecl}} {\terminal{)}} {\terminal{\{}} {\nonterminal{TheoryInst}} {\terminal{\}}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{VariableDecl}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{:}} {\nonterminal{DottedPath}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListVariableDecl}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{VariableDecl}}  \\
+ & {\delimit}  &{\nonterminal{VariableDecl}} {\terminal{,}} {\nonterminal{ListVariableDecl}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{DottedPath}} & {\arrow}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\terminal{.}} {\nonterminal{DottedPath}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Name}} & {\arrow}  &{\terminal{\_}}  \\
+ & {\delimit}  &{\nonterminal{Ident}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListName}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Name}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\terminal{,}} {\nonterminal{ListName}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{NameRemainder}} & {\arrow}  &{\terminal{...}} {\terminal{@}} {\nonterminal{Ident}}  \\
+ & {\delimit}  &{\emptyP} \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Fact}} & {\arrow}  &{\nonterminal{Item}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListFact}} & {\arrow}  &{\nonterminal{Fact}}  \\
+ & {\delimit}  &{\nonterminal{Fact}} {\terminal{;}} {\nonterminal{ListFact}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{FactComprehension}} & {\arrow}  &{\terminal{for}} {\terminal{(}} {\nonterminal{ListReceipt}} {\terminal{)}} {\nonterminal{SpaceInst7}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\nonterminal{Send}} {\terminal{(}} {\nonterminal{ListFact}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\nonterminal{Send}} {\terminal{(}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\terminal{!?}} {\terminal{(}} {\nonterminal{ListFact}} {\terminal{)}} {\nonterminal{SynchSendCont}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\terminal{!?}} {\terminal{(}} {\terminal{)}} {\nonterminal{SynchSendCont}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListFactComprehension}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{FactComprehension}}  \\
+ & {\delimit}  &{\nonterminal{FactComprehension}} {\terminal{,}} {\nonterminal{ListFactComprehension}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Receipt}} & {\arrow}  &{\nonterminal{ReceiptLinearImpl}}  \\
+ & {\delimit}  &{\nonterminal{ReceiptRepeatedImpl}}  \\
+ & {\delimit}  &{\nonterminal{ReceiptPeekImpl}}  \\
+ & {\delimit}  &{\nonterminal{ReceiptSymmLinearImpl}}  \\
+ & {\delimit}  &{\nonterminal{ReceiptSymmRepeatedImpl}}  \\
+ & {\delimit}  &{\nonterminal{ReceiptSymmPeekImpl}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListReceipt}} & {\arrow}  &{\nonterminal{Receipt}}  \\
+ & {\delimit}  &{\nonterminal{Receipt}} {\terminal{;}} {\nonterminal{ListReceipt}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptLinearImpl}} & {\arrow}  &{\nonterminal{ListLinearBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{LinearBind}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$-$}}} {\nonterminal{NameSource}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListLinearBind}} & {\arrow}  &{\nonterminal{LinearBind}}  \\
+ & {\delimit}  &{\nonterminal{LinearBind}} {\terminal{\&}} {\nonterminal{ListLinearBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{NameSource}} & {\arrow}  &{\nonterminal{Name}}  \\
+ & {\delimit}  &{\terminal{self}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\terminal{?!}}  \\
+ & {\delimit}  &{\nonterminal{Name}} {\terminal{!?}} {\terminal{(}} {\nonterminal{ListFact}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptRepeatedImpl}} & {\arrow}  &{\nonterminal{ListRepeatedBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{RepeatedBind}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$=$}}} {\nonterminal{Name}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListRepeatedBind}} & {\arrow}  &{\nonterminal{RepeatedBind}}  \\
+ & {\delimit}  &{\nonterminal{RepeatedBind}} {\terminal{\&}} {\nonterminal{ListRepeatedBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptPeekImpl}} & {\arrow}  &{\nonterminal{ListPeekBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{PeekBind}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$<$}{$-$}}} {\nonterminal{Name}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListPeekBind}} & {\arrow}  &{\nonterminal{PeekBind}}  \\
+ & {\delimit}  &{\nonterminal{PeekBind}} {\terminal{\&}} {\nonterminal{ListPeekBind}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptSymmLinearImpl}} & {\arrow}  &{\nonterminal{ListLinearBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{LinearBindSymm}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$-$}{$>$}}} {\nonterminal{NameSource}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListLinearBindSymm}} & {\arrow}  &{\nonterminal{LinearBindSymm}}  \\
+ & {\delimit}  &{\nonterminal{LinearBindSymm}} {\terminal{\&}} {\nonterminal{ListLinearBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptSymmRepeatedImpl}} & {\arrow}  &{\nonterminal{ListRepeatedBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{RepeatedBindSymm}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$=$}{$>$}}} {\nonterminal{Name}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListRepeatedBindSymm}} & {\arrow}  &{\nonterminal{RepeatedBindSymm}}  \\
+ & {\delimit}  &{\nonterminal{RepeatedBindSymm}} {\terminal{\&}} {\nonterminal{ListRepeatedBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ReceiptSymmPeekImpl}} & {\arrow}  &{\nonterminal{ListPeekBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{PeekBindSymm}} & {\arrow}  &{\nonterminal{ListName}} {\nonterminal{NameRemainder}} {\terminal{{$<$}{$<$}{$-$}{$>$}{$>$}}} {\nonterminal{Name}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListPeekBindSymm}} & {\arrow}  &{\nonterminal{PeekBindSymm}}  \\
+ & {\delimit}  &{\nonterminal{PeekBindSymm}} {\terminal{\&}} {\nonterminal{ListPeekBindSymm}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SynchSendCont}} & {\arrow}  &{\terminal{.}}  \\
+ & {\delimit}  &{\terminal{;}} {\nonterminal{SpaceInst}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Send}} & {\arrow}  &{\terminal{!}}  \\
+ & {\delimit}  &{\terminal{!!}}  \\
+ & {\delimit}  &{\terminal{!\$}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Export}} & {\arrow}  &{\nonterminal{Cat}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListExport}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Export}} {\terminal{;}} {\nonterminal{ListExport}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Replacement}} & {\arrow}  &{\nonterminal{IntList}} {\nonterminal{Label}} {\terminal{.}} {\nonterminal{Cat}} {\terminal{{$=$}{$>$}}} {\nonterminal{Def}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListReplacement}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Replacement}} {\terminal{;}} {\nonterminal{ListReplacement}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Grammar}} & {\arrow}  &{\nonterminal{ListDef}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListDef}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Def}} {\terminal{;}} {\nonterminal{ListDef}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListItem}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Item}} {\nonterminal{ListItem}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Def}} & {\arrow}  &{\nonterminal{Label}} {\terminal{.}} {\nonterminal{Cat}} {\terminal{::{$=$}}} {\nonterminal{ListItem}}  \\
+ & {\delimit}  &{\terminal{comment}} {\nonterminal{String}}  \\
+ & {\delimit}  &{\terminal{comment}} {\nonterminal{String}} {\nonterminal{String}}  \\
+ & {\delimit}  &{\terminal{internal}} {\nonterminal{Label}} {\terminal{.}} {\nonterminal{Cat}} {\terminal{::{$=$}}} {\nonterminal{ListItem}}  \\
+ & {\delimit}  &{\terminal{token}} {\nonterminal{Ident}} {\nonterminal{Reg}}  \\
+ & {\delimit}  &{\terminal{position}} {\terminal{token}} {\nonterminal{Ident}} {\nonterminal{Reg}}  \\
+ & {\delimit}  &{\terminal{entrypoints}} {\nonterminal{ListIdent}}  \\
+ & {\delimit}  &{\terminal{separator}} {\nonterminal{MinimumSize}} {\nonterminal{Cat}} {\nonterminal{String}}  \\
+ & {\delimit}  &{\terminal{terminator}} {\nonterminal{MinimumSize}} {\nonterminal{Cat}} {\nonterminal{String}}  \\
+ & {\delimit}  &{\terminal{coercions}} {\nonterminal{Ident}} {\nonterminal{Integer}}  \\
+ & {\delimit}  &{\terminal{rules}} {\nonterminal{Ident}} {\terminal{::{$=$}}} {\nonterminal{ListRHS}}  \\
+ & {\delimit}  &{\terminal{layout}} {\nonterminal{ListString}}  \\
+ & {\delimit}  &{\terminal{layout}} {\terminal{stop}} {\nonterminal{ListString}}  \\
+ & {\delimit}  &{\terminal{layout}} {\terminal{toplevel}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Item}} & {\arrow}  &{\nonterminal{String}}  \\
+ & {\delimit}  &{\nonterminal{Cat}}  \\
+ & {\delimit}  &{\terminal{(}} {\terminal{Bind}} {\nonterminal{Ident}} {\nonterminal{IntList}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Cat}} & {\arrow}  &{\terminal{[}} {\nonterminal{Cat}} {\terminal{]}}  \\
+ & {\delimit}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\terminal{.}} {\nonterminal{Cat}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Label}} & {\arrow}  &{\nonterminal{LabelId}}  \\
+ & {\delimit}  &{\nonterminal{LabelId}} {\nonterminal{ListProfItem}}  \\
+ & {\delimit}  &{\nonterminal{LabelId}} {\nonterminal{LabelId}} {\nonterminal{ListProfItem}}  \\
+ & {\delimit}  &{\nonterminal{LabelId}} {\nonterminal{LabelId}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{LabelId}} & {\arrow}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\terminal{\_}}  \\
+ & {\delimit}  &{\terminal{[}} {\terminal{]}}  \\
+ & {\delimit}  &{\terminal{(}} {\terminal{:}} {\terminal{)}}  \\
+ & {\delimit}  &{\terminal{(}} {\terminal{:}} {\terminal{[}} {\terminal{]}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ProfItem}} & {\arrow}  &{\terminal{(}} {\terminal{[}} {\nonterminal{ListIntList}} {\terminal{]}} {\terminal{,}} {\terminal{[}} {\nonterminal{ListInteger}} {\terminal{]}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{IntList}} & {\arrow}  &{\terminal{[}} {\nonterminal{ListInteger}} {\terminal{]}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListInteger}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Integer}}  \\
+ & {\delimit}  &{\nonterminal{Integer}} {\terminal{,}} {\nonterminal{ListInteger}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListIntList}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{IntList}}  \\
+ & {\delimit}  &{\nonterminal{IntList}} {\terminal{,}} {\nonterminal{ListIntList}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListProfItem}} & {\arrow}  &{\nonterminal{ProfItem}}  \\
+ & {\delimit}  &{\nonterminal{ProfItem}} {\nonterminal{ListProfItem}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListString}} & {\arrow}  &{\nonterminal{String}}  \\
+ & {\delimit}  &{\nonterminal{String}} {\terminal{,}} {\nonterminal{ListString}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListRHS}} & {\arrow}  &{\nonterminal{RHS}}  \\
+ & {\delimit}  &{\nonterminal{RHS}} {\terminal{{$|$}}} {\nonterminal{ListRHS}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{RHS}} & {\arrow}  &{\nonterminal{ListItem}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{MinimumSize}} & {\arrow}  &{\terminal{nonempty}}  \\
+ & {\delimit}  &{\emptyP} \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Reg2}} & {\arrow}  &{\nonterminal{Reg2}} {\nonterminal{Reg3}}  \\
+ & {\delimit}  &{\nonterminal{Reg3}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Reg1}} & {\arrow}  &{\nonterminal{Reg1}} {\terminal{{$|$}}} {\nonterminal{Reg2}}  \\
+ & {\delimit}  &{\nonterminal{Reg2}} {\terminal{{$-$}}} {\nonterminal{Reg2}}  \\
+ & {\delimit}  &{\nonterminal{Reg2}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Reg3}} & {\arrow}  &{\nonterminal{Reg3}} {\terminal{*}}  \\
+ & {\delimit}  &{\nonterminal{Reg3}} {\terminal{{$+$}}}  \\
+ & {\delimit}  &{\nonterminal{Reg3}} {\terminal{?}}  \\
+ & {\delimit}  &{\terminal{eps}}  \\
+ & {\delimit}  &{\nonterminal{Char}}  \\
+ & {\delimit}  &{\terminal{[}} {\nonterminal{String}} {\terminal{]}}  \\
+ & {\delimit}  &{\terminal{\{}} {\nonterminal{String}} {\terminal{\}}}  \\
+ & {\delimit}  &{\terminal{digit}}  \\
+ & {\delimit}  &{\terminal{letter}}  \\
+ & {\delimit}  &{\terminal{upper}}  \\
+ & {\delimit}  &{\terminal{lower}}  \\
+ & {\delimit}  &{\terminal{char}}  \\
+ & {\delimit}  &{\terminal{(}} {\nonterminal{Reg}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Reg}} & {\arrow}  &{\nonterminal{Reg1}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListIdent}} & {\arrow}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\terminal{,}} {\nonterminal{ListIdent}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Equation}} & {\arrow}  &{\terminal{if}} {\nonterminal{Ident}} {\terminal{\#}} {\nonterminal{Ident}} {\terminal{then}} {\nonterminal{Equation}}  \\
+ & {\delimit}  &{\nonterminal{AST}} {\terminal{{$=$}{$=$}}} {\nonterminal{AST}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListEquation}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Equation}} {\terminal{;}} {\nonterminal{ListEquation}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{RewriteDecl}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{:}} {\nonterminal{Rewrite}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListRewriteDecl}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{RewriteDecl}}  \\
+ & {\delimit}  &{\nonterminal{RewriteDecl}} {\terminal{;}} {\nonterminal{ListRewriteDecl}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Rewrite}} & {\arrow}  &{\nonterminal{AST}} {\terminal{\~{}{$>$}}} {\nonterminal{AST}}  \\
+ & {\delimit}  &{\terminal{let}} {\nonterminal{Hypothesis}} {\terminal{in}} {\nonterminal{Rewrite}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{AST}} & {\arrow}  &{\terminal{(}} {\terminal{Subst}} {\nonterminal{AST}} {\nonterminal{AST}} {\nonterminal{Ident}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\terminal{(}} {\nonterminal{Ident}} {\nonterminal{ListAST}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListAST}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{AST}} {\nonterminal{ListAST}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Hypothesis}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{\~{}{$>$}}} {\nonterminal{Ident}}  \\
+\end{tabular}\\
+
 \end{document}
