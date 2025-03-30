@@ -25,11 +25,25 @@
 
 \section{Introduction}
 
-$\MC$ is the codename for a new decentralized AI platform.  The network will have agents, both human and AI, who can share digital assets of all kinds, attenuate and delegate access to those assets, and make powerful queries about each other's content.  
+$\MC$ is the codename for a new decentralized AI platform.  The
+network will have agents, both human and AI, who can share digital
+assets of all kinds, attenuate and delegate access to those assets,
+and make powerful queries about each other's content.
 
-We anticipate at least two interface points between humans and the network; both of these will be based on existing user interfaces with which users are already familiar.  The first is through the operating system, where $\FD$ will be mounted into the filesystem.  The second will be based on existing open source social networking software, currently $\mathsf{BlueSky}$ and $\mathsf{Mastodon}$.
+We anticipate at least two interface points between humans and the
+network; both of these will be based on existing user interfaces with
+which users are already familiar.  The first is through the operating
+system, where $\FD$ will be mounted into the filesystem.  The second
+will be based on existing open source social networking software,
+currently $\mathsf{BlueSky}$ and $\mathsf{Mastodon}$.
 
-$\MC$, as its name suggests, will feature a version of the $\mathsf{MeTTa}$ programming language.  The driving concept for $\mathsf{MeTTa}$ is the idea that intelligence opportunistically creates theories of computation to suit the domain in which the intelligence is operating.  $\MC$ intends to connect many theories operating in many domains, and to enable reasoning about these interactions.
+$\MC$, as its name suggests, will feature a version of the
+$\mathsf{MeTTa}$ programming language.  The driving concept for
+$\mathsf{MeTTa}$ is the idea that intelligence opportunistically
+creates theories of computation to suit the domain in which the
+intelligence is operating.  $\MC$ intends to connect many theories
+operating in many domains, and to enable reasoning about these
+interactions.
 
 \subsection{The $\mathsf{MeTTa}$ Kernel}
 
@@ -39,9 +53,9 @@ interpreter that is suited for smart contracts on a
 blockchain~\cite{GoertzelMeredith2024}.
 
 Without reproducing much of $\mathsf{MeTTa}$'s internals explicitly in
-the theory, the $0.1$ version of $\mathsf{MeTTa}$ has limitations with
+the theory, the alpha version of $\mathsf{MeTTa}$ has limitations with
 respect to the ultimate goals for the language. Currently, the
-research version cannot model different evaluation strategies for
+alpha version cannot model different evaluation strategies for
 lambda calculus, cannot model the semantics of the $\pi$ calculus and
 other mobile process calculi, and has several other problems
 preventing it from living up to this vision.  We propose an
@@ -56,7 +70,7 @@ architecture based on category theoretical concepts that will enable the next ve
 and more.
 
 Section \ref{Theories of computation} attempts to express some
-theories of computation in the research version of $\mathsf{MeTTa}$ to
+theories of computation in the alpha version of $\mathsf{MeTTa}$ to
 illustrate some of its limitations.  Section \ref{A way forward}
 describes graph-structured lambda theories (GSLTs), which lifts these
 expressability limitations.  Section \ref{Generating an interpreter
@@ -79,9 +93,9 @@ services. Despite these additional constraints and their corresponding
 remedies, $\MC$ must also be accessible and not hidden behind arcane
 or cryptic command line interfaces.
 
-To achieve the former we adopt a capabilities driven tokenization
-model. Access to compute and storage are mediated by (object)
-capabilities represented as tokens. See the \ref{Security model} for
+To achieve the former we adopt a capabilities-driven tokenization
+model. Access to compute and storage are mediated by object
+capabilities amplified by tokens. See the \ref{Security model} for
 details. To achieve the latter we provide integration of $\MC$ with
 the file systems for the major operating systems; and, with major
 social media platforms. See \ref{Deployment and integration}.
@@ -232,7 +246,7 @@ data on chain or agents on chain to other networks.
 \label{Theories of computation}
 
 In this section, we attempt to implement a couple of theories of
-computation in the research version of $\mathsf{MeTTa}$ and uncover
+computation in the alpha version of $\mathsf{MeTTa}$ and uncover
 some missing features and limitations with the current implementation.
 
 \subsubsection{The theory of lambda calculus}
@@ -292,7 +306,7 @@ or to reduce under a lambda without considerably more machinery.
 
 \subsubsection{The theory of RHO calculus}
 
-Unfortunately, the research version of $\mathsf{MeTTa}$ is also unable
+Unfortunately, the alpha version of $\mathsf{MeTTa}$ is also unable
 to model the RHO calculus~\cite{MeredithRadestock2005} (a Reflective
 Higher-Order pi calculus) in a straightforward way:
 
@@ -364,7 +378,7 @@ should not reduce.  The process \verb+Proc+ will always reduce to \verb+Zero+ if
 
 \subsubsection{Other theories}
 
-Other features missing from the research version of $\mathsf{MeTTa}$ that impair its ability to implement theories of computation include:
+Other features missing from the alpha version of $\mathsf{MeTTa}$ that impair its ability to implement theories of computation include:
 \begin{itemize}
     \item The lack of a \verb+lambda+ grounded atom for defining functions inline.
     \item No way to force evaluation of a subexpression.
@@ -521,16 +535,18 @@ below for more details.
 $\mathsf{MeTTaIL}$ takes the idea presented above of a self-describing
 GSLT for describing GSLTs seriously, and provides a clean intermediate
 language for representing theories in a way that is more
-compiler-friendly than the research version of $\mathsf{MeTTa}$'s
+compiler-friendly than the alpha version of $\mathsf{MeTTa}$'s
 design. That is, $\mathsf{MeTTaIL}$ files represent compilation units
 in much the same way that a file in $\mathsf{Java}$ represents a
 compilation unit.
 
 Beyond this, $\mathsf{MeTTaIL}$ is the input language for the
 algorithm for generating an interpreter and the algorithm for
-generating a type system. The self-describing spec for
-$\mathsf{MeTTaIL}$ is
-linked $\href{https://github.com/F1R3FLY-io/MeTTa/blob/dev/GSLT/src/main/bnfc/metta_venus.cf}{here}$. An example of a $\mathsf{MeTTaIL}$ specification for $\mathsf{rholang}$ is linked $\href{https://gist.github.com/leithaus/9cef95f3b703a406385e94cb6b1aab67}{here}$.
+generating a type system. The $\mathsf{GitHub}$ repo for the
+self-describing spec for $\mathsf{MeTTaIL}$ is linked
+$\href{https://github.com/F1R3FLY-io/MeTTa/blob/dev/GSLT/src/main/bnfc/metta_venus.cf}{here}$. To make this paper a little more self-contained we have included an appendix with a summary of the spec: \ref{Appendix A}. The repo contains as a test an example of a $\mathsf{MeTTaIL}$ specification for $\mathsf{rholang}$
+which is linked
+$\href{https://gist.github.com/leithaus/9cef95f3b703a406385e94cb6b1aab67}{here}$. Again, to help with some of the context switching, we have included this content as an appendix \ref{Appendix B}.
 
 The $\mathsf{rholang}$ example is of particular note in the
 decentralization space. $\mathsf{Rholang}$ is a smart contracting
@@ -644,11 +660,11 @@ The Rholang interpreter uses a very efficient data structure called $\RS$ for st
 
 In the simplest cases, the names on which processes are sending and receiving get hashed, and if there's a process of the opposite polarity waiting in the hash table, they can synchronize.  $\RS$ also allows processes to bind variables using patterns.  This lets programmers dispatch messages on the same channel to different processes based on the content of the messages, and is the basis of the design of the interpreters above.
 
-\subsubsection{$\RS$ and MORK}
+\subsubsection{$\RS$ and $\mathsf{MORK}$}
 
-MORK ($\mathsf{MeTTa}$ Optimal Reduction Kernel) is a powerful functional language for manipulating graph databases in memory. It represents sets of paths using a trie, which can be exponentially smaller than the original dataset.  It can also act on all the paths in a subtrie simultaneously, which can be exponentially faster than mapping over a data set.  MORK was designed with provable efficiency in mind: each operation provides complexity guarantees.  Using MORK lets a programmer make accurate predictions about the computational complexity of a query.
+$\mathsf{MORK}$ ($\mathsf{MeTTa}$ Optimal Reduction Kernel) is a powerful functional language for manipulating graph databases in memory. It represents sets of paths using a trie, which can be exponentially smaller than the original dataset.  It can also act on all the paths in a subtrie simultaneously, which can be exponentially faster than mapping over a data set.  $\mathsf{MORK}$ was designed with provable efficiency in mind: each operation provides complexity guarantees.  Using $\mathsf{MORK}$ lets a programmer make accurate predictions about the computational complexity of a query.
 
-However, MORK does not have any transactional semantics or primitives for concurrency.  As such, $\RS$ and MORK are complementary languages, well-suited to each other.  Rholang 1.2 will embed MORK as a datatype in the same way that it embeds numbers, strings, lists, maps, and sets.  It will also use MORK for unification with patterns in receiving processes instead of merely binding a single variable.
+However, $\mathsf{MORK}$ does not have any transactional semantics or primitives for concurrency.  As such, $\RS$ and $\mathsf{MORK}$ are complementary languages, well-suited to each other.  Rholang 1.2 will embed $\mathsf{MORK}$ as a datatype in the same way that it embeds numbers, strings, lists, maps, and sets.  It will also use $\mathsf{MORK}$ for unification with patterns in receiving processes instead of merely binding a single variable.
 
 \subsection{Queries}
 \label{Queries}
@@ -657,7 +673,7 @@ There is a long tradition of associating types with predicates.  One of the earl
 
 Many modern languages also use predicates for types.  TypeScript, for example, includes a notion of narrowing the type of a value within \verb+if+ blocks whose condition tests some property of the value.  The native type theory mentioned above is the internal language of the topos of presheaves on the theory, and this internal language includes the ability to express predicates; but more generally, we can simply ask for witnesses of any particular type in a type system.  
 
-Finding such witnesses is the subject of an enormous literature and is outside the scope of this paper, but restricted problems can be solved quickly (e.g. MORK handles structural type queries very quickly).  Certainly Prolog's backtracking approach is a brute-force way of finding witnesses, but there are many other ways, and an interpreter supporting queries should expose many different methods with clear complexity guarantees.
+Finding such witnesses is the subject of an enormous literature and is outside the scope of this paper, but restricted problems can be solved quickly (e.g. $\mathsf{MORK}$ handles structural type queries very quickly).  Certainly Prolog's backtracking approach is a brute-force way of finding witnesses, but there are many other ways, and an interpreter supporting queries should expose many different methods with clear complexity guarantees.
 
 The automatically generated type systems above give us grammars in which to express queries in the form of an expanded GSLT including both the original operational semantics and new type-constructing function symbols. Since queries are about terms in a GSLT and the type system itelf is expressed as a GSLT, queries can produce new queries in which facts are added, subtracted, or transformed.
 
@@ -835,37 +851,125 @@ few below.
 
 \subsection{Ocaps for DevOps PaaS}
 
-A particularly compelling application of the $\MC$ architecture lies in the DevOps Platform-as-a-Service (PaaS) sector, where teams seek to configure and monitor projects with minimal overhead. Developers often rely on centralized providers to share infrastructure and capabilities, which can result in vulnerability to deplatforming (for example, when payment providers or credit card companies refuse service) or require complicated permissioning frameworks.
+A particularly compelling application of the $\MC$ architecture lies
+in the DevOps Platform-as-a-Service (PaaS) sector, where teams seek to
+configure and monitor projects with minimal overhead. Developers often
+rely on centralized providers to share infrastructure and
+capabilities, which can result in vulnerability to deplatforming (for
+example, when payment providers or credit card companies refuse
+service) or require complicated permissioning frameworks.
 
-By incorporating object-capabilities (ocaps) into a DevOps environment, $\MC$ could provide a robust mechanism for delegating and attenuating authorization among team members. Specifically, a lightweight plugin or extension built on top of $\MC$ could let organizations share their DevOps resources (such as CI/CD pipelines, artifact repositories, and monitoring dashboards) via secure tokens. This would allow fine-grained access control---even down to the level of revocable, limited-lifespan tokens for specific tasks.
+By incorporating object-capabilities (ocaps) into a DevOps
+environment, $\MC$ could provide a robust mechanism for delegating and
+attenuating authorization among team members. Specifically, a
+lightweight plugin or extension built on top of $\MC$ could let
+organizations share their DevOps resources (such as CI/CD pipelines,
+artifact repositories, and monitoring dashboards) via secure
+tokens. This would allow fine-grained access control---even down to
+the level of revocable, limited-lifespan tokens for specific tasks.
 
-This approach distinguishes itself from existing DevOps PaaS offerings in that it deploys ocaps as the fundamental security model, rather than as an add-on or ad-hoc wrapper. While no current competitor offers a sharing model based on ocaps, the development of such a plugin would likely require its own dedicated team to ensure seamless integration with existing DevOps tools.
+This approach distinguishes itself from existing DevOps PaaS offerings
+in that it deploys ocaps as the fundamental security model, rather
+than as an add-on or ad-hoc wrapper. While no current competitor
+offers a sharing model based on ocaps, the development of such a
+plugin would likely require its own dedicated team to ensure seamless
+integration with existing DevOps tools.
 
-An interesting extension of this model would be to empower autonomous AI agents with delegated ocaps for various DevOps operations. For example, an AI-driven build optimizer could be granted a strictly bounded token that allows it to adjust continuous integration parameters without risking broader system access. Such autonomous agents could also facilitate zero-downtime deployments and real-time resource scaling, all while ensuring that their authority remains precisely delimited by the ocaps architecture.
+An interesting extension of this model would be to empower autonomous
+AI agents with delegated ocaps for various DevOps operations. For
+example, an AI-driven build optimizer could be granted a strictly
+bounded token that allows it to adjust continuous integration
+parameters without risking broader system access. Such autonomous
+agents could also facilitate zero-downtime deployments and real-time
+resource scaling, all while ensuring that their authority remains
+precisely delimited by the ocaps architecture.
 
 \subsection{Sensors}
 
-A second use case envisions a network of industrial sensors within a smart factory, all powered by $\MC$'s concurrency and transactional semantics. Many factories rely on streams of data from robotic arms, assembly lines, and inventory management systems, feeding downstream analytics to optimize production. A decentralized “marketplace” for sensor data could allow different agents---both human and AI---to connect, filter, and aggregate these streams.
+A second use case envisions a network of industrial sensors within a
+smart factory, all powered by $\MC$'s concurrency and transactional
+semantics. Many factories rely on streams of data from robotic arms,
+assembly lines, and inventory management systems, feeding downstream
+analytics to optimize production. A decentralized “marketplace” for
+sensor data could allow different agents---both human and AI---to
+connect, filter, and aggregate these streams.
 
-Using $\MC$, sensors and agents become active participants in an economy of data consumption. The architecture’s flexible query language can filter live streams and route relevant information to different processes for anomaly detection or predictive maintenance. The emphasis on concurrency and fine-grained access tokens could enable secure, selective data sharing among industrial partners or even across entire supply chains.
+Using $\MC$, sensors and agents become active participants in an
+economy of data consumption. The architecture’s flexible query
+language can filter live streams and route relevant information to
+different processes for anomaly detection or predictive
+maintenance. The emphasis on concurrency and fine-grained access
+tokens could enable secure, selective data sharing among industrial
+partners or even across entire supply chains.
 
-In this environment, autonomous AI agents could automatically negotiate data access or deploy new analytics modules where they detect certain operational inefficiencies. These agents might, for instance, purchase sensor data streams to train local machine-learning models or dynamically grant short-term access credentials to other agents for collaborative filtering. Crucially, the ocaps mechanism ensures they can only access precisely what they are authorized to, preventing them from overstepping their operational bounds.
+In this environment, autonomous AI agents could automatically
+negotiate data access or deploy new analytics modules where they
+detect certain operational inefficiencies. These agents might, for
+instance, purchase sensor data streams to train local machine-learning
+models or dynamically grant short-term access credentials to other
+agents for collaborative filtering. Crucially, the ocaps mechanism
+ensures they can only access precisely what they are authorized to,
+preventing them from overstepping their operational bounds.
 
 \subsection{Sandstorm}
 
-Sandstorm (sandstorm.org) has long provided a platform for sandboxed apps that users can self-host, ensuring data ownership. By deploying $\MC$ as an underlying engine for sandstorm deployments, resource owners can store, share, and collaboratively edit data in a decentralized fashion. Attenuation and delegation of capabilities would be governed by tokens: the owner (or a controlling agent) issues tokens to participants, granting privileged or time-limited access to certain documents, files, or worlds. This model aligns with sandstorm.org’s mission of self-hosting and privacy protection, extending it with the added benefits of a censorship-resistant, Byzantine fault tolerant infrastructure.
+Sandstorm (sandstorm.org) has long provided a platform for sandboxed
+apps that users can self-host, ensuring data ownership. By deploying
+$\MC$ as an underlying engine for sandstorm deployments, resource
+owners can store, share, and collaboratively edit data in a
+decentralized fashion. Attenuation and delegation of capabilities
+would be governed by tokens: the owner (or a controlling agent) issues
+tokens to participants, granting privileged or time-limited access to
+certain documents, files, or worlds. This model aligns with
+sandstorm.org’s mission of self-hosting and privacy protection,
+extending it with the added benefits of a censorship-resistant,
+Byzantine fault tolerant infrastructure.
 
-Because the integration would require modifications or plugin development within the sandstorm stack itself, it might entail a dedicated development effort. The result, however, would unify the user-friendly collaboration tools sandstorm.org is known for with the secure, decentralized capabilities of $\MC$.
+Because the integration would require modifications or plugin
+development within the sandstorm stack itself, it might entail a
+dedicated development effort. The result, however, would unify the
+user-friendly collaboration tools sandstorm.org is known for with the
+secure, decentralized capabilities of $\MC$.
 
-AI agents could automate content moderation tasks, track and summarize collaborative work, or even autonomously curate shared documents for improved knowledge management. By granting these agents time-limited tokens to view and potentially modify files, users could safely outsource tasks such as grammar correction, code review, or content organization to intelligent assistants without risking full administrative access over an entire collection.
+AI agents could automate content moderation tasks, track and summarize
+collaborative work, or even autonomously curate shared documents for
+improved knowledge management. By granting these agents time-limited
+tokens to view and potentially modify files, users could safely
+outsource tasks such as grammar correction, code review, or content
+organization to intelligent assistants without risking full
+administrative access over an entire collection.
 
 \subsection{File hosting}
 
-Finally, an obvious and powerful use case for $\MC$ is straightforward file hosting and sharing, akin to Dropbox or Google Drive. Current commercial solutions often rely on crash fault tolerant architectures that scale well but are prone to deplatforming or security breaches at the central provider. There are also open-source alternatives, such as Tahoe-LAFS, that offer strong decentralization and encryption. $\MC$ naturally aligns with the design philosophy behind censorship-resistant file systems, providing concurrency, transactionality, and token-based access.
+Finally, an obvious and powerful use case for $\MC$ is straightforward
+file hosting and sharing, akin to Dropbox or Google Drive. Current
+commercial solutions often rely on crash fault tolerant architectures
+that scale well but are prone to deplatforming or security breaches at
+the central provider. There are also open-source alternatives, such as
+Tahoe-LAFS, that offer strong decentralization and encryption. $\MC$
+naturally aligns with the design philosophy behind
+censorship-resistant file systems, providing concurrency,
+transactionality, and token-based access.
 
-Leveraging $\FD$'s existing filesystem bridge, a user could simply drag and drop documents into a folder that is mapped onto $\MC$. This approach already offers encryption at rest, with $\FD$'s environment allowing multi-party access via tokenization. The result is a file hosting platform in which censorship is far more difficult, and availability is improved through blockchain-level fault-tolerance. A key question for future work is how to best integrate advanced encryption and chunk-level redundancy strategies (similar to Tahoe-LAFS) into $\FD$'s architecture to further enhance privacy and reliability.
+Leveraging $\FD$'s existing filesystem bridge, a user could simply
+drag and drop documents into a folder that is mapped onto $\MC$. This
+approach already offers encryption at rest, with $\FD$'s environment
+allowing multi-party access via tokenization. The result is a file
+hosting platform in which censorship is far more difficult, and
+availability is improved through blockchain-level fault-tolerance. A
+key question for future work is how to best integrate advanced
+encryption and chunk-level redundancy strategies (similar to
+Tahoe-LAFS) into $\FD$'s architecture to further enhance privacy and
+reliability.
 
-In this file hosting scenario, autonomous AI agents could assist with document indexing, advanced search capabilities, and automated backups. Using token-limited capabilities, agents might be granted read-only access to large sets of stored files, enabling them to provide semantic search or categorization without the risk of unauthorized edits or deletions. This delegation approach would preserve user control while unlocking AI-driven efficiencies in managing and organizing decentralized data.
+In this file hosting scenario, autonomous AI agents could assist with
+document indexing, advanced search capabilities, and automated
+backups. Using token-limited capabilities, agents might be granted
+read-only access to large sets of stored files, enabling them to
+provide semantic search or categorization without the risk of
+unauthorized edits or deletions. This delegation approach would
+preserve user control while unlocking AI-driven efficiencies in
+managing and organizing decentralized data.
 
 \section{Conclusion}
 
@@ -914,6 +1018,32 @@ new wave of decentralization in which nodes may participate in
 multiple different networks. This promiscuity dramatically increases
 the opportunities for network interoperability, and allows new
 features to be brought from one network to another.
+
+More generally, the ability to autogenerate the bulk of the
+technological apparatus that goes into decentralization lowers the bar
+for the development and deployment of decentralized solutions. Instead
+of spending years developing a smart contracting system by hand, or
+months forking and tweaking an existing system, the $\MC$ provides a
+collection of algorithms that can reduce this part of the effort of
+rolling out a new network to minutes. From an existing operational
+semantics spec, press a button \emph{et voila} an efficient
+\emph{tokenized} interpreter of the semantics is produced as
+executable code. Press another button \emph{et voila} a
+spatial-behavioral type system and an efficient type-checker for it is
+rendered to code, thus delivering safety, liveness, and security
+guarantees that the current generation of smart contracts could have
+greatly benefitted from. Finally, merely choose the form of consensus
+needed for the contemplated deployment use case from a library of
+existing components, and \emph{hey presto!} your network is ready for
+deployment.
+
+By commoditizing these aspects of the technical challenges of
+providing decentralized solutions decentralization itself is further
+decentralized. With $\MC$ anyone can decentralize their
+offering. Reasons not to are pushed further into sociological or
+political spheres, not technical ones. After all, nature is both
+master and mistress of decentralization. Birds do it, bees do it, why
+can't we do it?
 
 As we have emphasized, however, for the full potential of
 decentralization to be realized it must be integrated into the
@@ -987,6 +1117,7 @@ Williams, Christian, and Michael Stay (2021). ``Native Type Theory.'' \emph{Proc
 \end{thebibliography}
 
 \section{Appendix A: A Summary of $\mathsf{MeTTaIL}$}
+\label{Appendix A}
 
 \setlength{\parindent}{0mm}
 \setlength{\parskip}{1mm}
@@ -1573,6 +1704,7 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \section{Appendix B: Examples of $\mathsf{MeTTaIL}$}
+\label{Appendix B}
 
 \begin{verbatim}
 //UnivAlg.module file contents
