@@ -837,6 +837,133 @@ tokenization of capabilities and the integration of agentic AI.
 
 Please refer to the live roadmap planning document linked $\href{https://docs.google.com/spreadsheets/d/1XqL1_ludowA7YHjDkHuX9lQyY5-NBH-mKOMDr4SUQtc/edit?usp=sharing}{here}$.
 
+\section{$\mathsf{MeTTaIL}$ and AI}
+
+\subsection{Evolutionary programming: Mating Theories in Practice}
+
+We describe an approach to evolutionary programming for GSLTs.  We
+assume an interactive GSLT, say $I$. That is, $I$ enjoys a
+hypothesis-free (or base) reduction rule of the form $K( P, E ) ~> K'(
+P', E' )$.  And, for simplicity, we assume this is the only rewrite of
+the theory. \footnote{We can detect this with a spatial type on
+MeTTaIL theories.}
+
+Here $K$ is some constructor of the theory, $P$ is a subtype of $Proc$
+(the principal export of $I$), $E$ is also subtype of $Proc$. We use the
+mnemonics $P$ and $E$ to remind us that $P$ is to be thought of as
+"program" (aka the agent or subject of the state), and $E$ is to be
+thought of as environment (the aspect of the state understood as
+the context in which the program or agent is operating).
+
+\paragraph{Examples}:
+\begin{itemize}
+\item $\lambda$-calculus:
+  \begin{itemize}
+  \item $K = App$, $P = Abs( [x]f )$, $E = arg$,
+%%  \item $P' = f[ arg / x ]$, $E' = \empty$, $K' = \box$
+  \item $App( Abs( [x]f ), arg ) ~> f[ arg / x ]$
+  \end{itemize}
+\item rho calculus:
+  \begin{itemize}
+    \item $K = Par$, $P = Recv( x, [y]R )$, $E = Send( x, Q )$,
+%%    \item $P' = R[ @Q / y ]$, $E = 0$, $K' = \box$
+    \item $Par( Recv( x, R ), Send( x, Q ) ) ~> R( @Q )$
+  \end{itemize}
+\item or
+  \begin{itemize}
+  \item $P = Send( x, Q )$, $E = Recv( x, R )$,
+  \item $P' = 0, E' = R( @Q )$, etc
+  \end{itemize}
+\end{itemize}
+
+Is there a cross-over operator between two interactive GSLTs, say $I$ and $J$?
+
+Suppose that $Terms( I ) = Terms( J )$. For simplicity we will also
+suppose that $Equations( I ) = Equations( J )$. However, we will
+revisit this.  Suppose further that $base( I ) = F_s( F_{1_s}( P ),
+F_{2_s}( E ) ) ~> F_t( F_{1_t}( P' ), F_{2_t}( E' ) )$ and $base( J ) = M_s(
+M_{1_s}( P ), M_{2_s}( E ) ) ~> M_t( M_{1_t}( P' ), M_{2_t}( E' ) )$.  Then we
+can define a collection of new theories, denoted $I \otimes J$. To
+specify this collection we define some useful auxilliary collections.
+
+Ed note: arities have to match.
+
+\begin{align}
+  src( I \otimes J ) &= \{ \\
+    F_s( F_{1_s}( P ), F_{2_s}( E ) ),\\
+    M_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    F_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    M_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    F_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    M_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    F_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    M_s( F_{1_s}( P ), F_{2_s}( E ) )\\
+  \}
+\end{align}
+
+\begin{align}
+  trgt( I \otimes J ) &= \{ \\
+    F_t( F_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    M_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    F_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    M_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    F_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    M_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    F_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    M_t( F_{1_t}( P' ), F_{2_t}( E' ) )\\
+  \}
+\end{align}
+
+Finally, we can define
+
+\begin{align}
+  I \otimes J = \mathsf{for}( src \mathsf{<-} \mathsf{src}( I \otimes J ); trgt \mathsf{<-} \mathsf{trgt}( I \otimes J ) ) \mathsf{yield} \{ \\
+  \mathsf{Theory} \mathsf{mkName}( src, trgt )() \{ \\
+       \mathsf{Nil} \\
+    \mathsf{Terms} \{ \mathsf{Terms}( I ) \} \\
+    \mathsf{Equations} \{ \mathsf{Equations}( J ) \} \\
+    \mathsf{Rewrites} \{ src ~> trgt \} \\
+  \}
+\end{align}
+
+Notice that we could have applied the same technique to contextual rewrites,
+as well as equations.
+
+Now, we can describe a population, say $Pop$, (of theories) distributed over a
+namespace, say $N$, according to a distribution, $D$.
+
+\begin{align}
+  \mathsf{letrec} islands &= \\
+  Locate( Pop, N, D ) &= \\
+    \mathsf{foldLeft}( \\
+      Pop, \\
+      0, \\
+      ( acc, e ) \mathsf{=>} \{ \\
+        \mathsf{let} ( sex, chan ) \mathsf{=} ( \mathsf{rand}( 0, 1 ), \mathsf{choose}( N, D ) ) \mathsf{in} \\
+        \mathsf{let} pheno = \\
+          \mathsf{match} sex \mathsf{with} \{ \\
+            \mathsf{case} 0 \mathsf{=>} \{ \\
+              \mathsf{for}( t\mathsf{@}\mathsf{Theory}\{ \mathsf{terms}( e ), \mathsf{equations}( e ), r \} \mathsf{<-} chan )\{ \\
+                Locate( e \otimes t, { chan }, \mathsf{Delta}( chan ) ) \\
+              \} \\
+            \}
+            \mathsf{case} 1 \mathsf{=>} \{ chan\mathsf{!}( e ) \} \\
+         \} \mathsf{in} \\
+          acc \mathsf{|} pheno \\
+      \} \\
+    ) \mathsf{in} \\
+   \mathsf{free}( \mathsf{MeTTaIL} ) \mathsf{=>} \{ \\
+      islands \\
+   \} 
+\end{align}
+
+Note that this preserves the core action of each theory, but changes the
+contextual wrapper around this action. Compare this with biology. Once
+chemistry had kindly supplied the Krebs cycle, this core action is conserved
+across all life. Likewise, once biology had kindly supplied sexual
+reproduction, this core action is conserved across all sexually reproducing
+life forms.
+
 \section{A few use cases}
 
 \subsection{Private data and models-as-a-service marketplace}
