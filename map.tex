@@ -1016,7 +1016,7 @@ specify this collection we define some useful auxilliary collections.
 
 Ed note: arities have to match.
 
-\begin{align}
+\begin{align*}
   \mathsf{src}( I \Join J ) &= \{ \\
     & F_s( F_{1_s}( P ), F_{2_s}( E ) ),\\
     & M_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
@@ -1027,9 +1027,9 @@ Ed note: arities have to match.
     & F_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
     & M_s( F_{1_s}( P ), F_{2_s}( E ) )\\
   \}
-\end{align}
+\end{align*}
 
-\begin{align}
+\begin{align*}
   \mathsf{trgt}( I \Join J ) &= \{ \\
     & F_t( F_{1_t}( P' ), F_{2_t}( E' ) ),\\
     & M_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
@@ -1040,21 +1040,22 @@ Ed note: arities have to match.
     & F_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
     & M_t( F_{1_t}( P' ), F_{2_t}( E' ) )\\
   \}
-\end{align}
+\end{align*}
 
 Finally, we can define
 
-\begin{align}
+\begin{align*}
   I \Join J \\
   & = \\
   & \mathsf{for}( src \leftarrow \mathsf{src}( I \Join J ); \; trgt \leftarrow \mathsf{trgt}( I \Join J ) ) \; \mathsf{yield}\; \{ \\
-  & \mathsf{Theory}\; \mathsf{mkName}( src, trgt )() \{ \\
-       & \quad \mathsf{Nil} \\
-    & \quad \mathsf{Terms}\; \{ \mathsf{Terms}( I ) \} \\
-    & \quad \mathsf{Equations}\; \{ \mathsf{Equations}( J ) \} \\
-    & \quad \mathsf{Rewrites}\; \{ src \leadsto trgt \} \\
+  & \quad \mathsf{Theory}\; \mathsf{mkName}( src, trgt )() \{ \\
+       & \quad \quad \mathsf{Nil} \\
+    & \quad \quad \mathsf{Terms}\; \{ \mathsf{Terms}( I ) \} \\
+    & \quad \quad \mathsf{Equations}\; \{ \mathsf{Equations}( J ) \} \\
+    & \quad \quad \mathsf{Rewrites}\; \{ src \leadsto trgt \} \\
+  & \quad \} \\
   \}
-\end{align}
+\end{align*}
 
 Notice that we could have applied the same technique to contextual rewrites,
 as well as equations.
@@ -1093,6 +1094,55 @@ chemistry had kindly supplied the Krebs cycle, this core action is conserved
 across all life. Likewise, once biology had kindly supplied sexual
 reproduction, this core action is conserved across all sexually reproducing
 life forms.
+
+\subsection{Stochasticity and learning}
+
+In addition to the $\mathsf{hypercube}$ endofunctor on the category of
+GSLTs there is another family of endofunctors taking GSLTs to
+corresponding stochastic versions, both for 1- \& 2-norm probability
+distributions, the latter effectively giving us a way to use GSLTs to
+write down quantum algorithms. Here we use the 1-norm probability
+distributions to define a generic notion of learning.
+
+The intuition is that we can imagine a version of neural networks
+where the connections are between black boxes. In the ordinary case,
+the black box is a highly constrained computation that either fires or
+it doesn't based on a threshold measurement. In this case, all the
+intelligence is in the connectivity, rather than in the black box. We
+can imagine, however, making the black box more intelligent. GSLTs
+allow us to defined what can go in the black box, while stochasticity
+effectively allows us to program the connectivity. In a word, we have
+a compositional notion of neural networks.
+
+To make this concrete we consider a generic learning for rholang.
+
+\begin{align*}
+  \mathsf{def}\; learn( \\
+  & x_1, \ldots, x_n, \\
+  & w_1, \ldots, w_n, \\
+  & s_1, \ldots, s_m, \\
+  & a \\
+  & )\; = \; \{ \\
+   &\mathsf{for}( y_1 \;\overset{w_1}{\leftarrow} x1\; \& \ldots \&\; y_n \overset{w_n} \leftarrow x_n )\;\{\;  \\
+      &\quad \mathsf{match}\; ( y_1, \ldots, y_n )\; \mathsf{with} \\
+         &\quad\quad \mathsf{case}\; ( v1Spec1, \ldots, vnSpec1 )\; \Rightarrow \{ \\
+            &\quad\quad\quad a\mathsf{!}( v_1 ) \\
+            &\quad\quad\quad |\; learn( x_1, \ldots, x_n, s_1( w_1 ), \ldots, s_1( w_n ), s_1, \ldots, s_m, a ) \\
+         &\quad\quad \} \\
+         &\quad\quad \ldots \\
+         &\quad\quad \mathsf{case}\; ( v1Specm, …, vnSpecm ) \; \Rightarrow \; \{ \\
+            &\quad\quad\quad a\mathsf{!}( vm ) \\
+            &\quad\quad\quad |\; learn( x_1, \ldots, x_n, s_m( w_1 ), \ldots, s_m( w_n ), s_1, \ldots, s_m, a ) \\
+         &\quad \}
+   &\}
+\}
+\end{align*}
+
+Now, under the current implementations of rholang, this will not be
+anything like as efficient as what's achieved by transformer based
+networks. However, we also have an algorithm for compiling GSLTs to
+hypervectors. This may yield a more efficient execution path for these
+kinds of compositional connection-based learning algorithms.
 
 \section{A few use cases}
 
