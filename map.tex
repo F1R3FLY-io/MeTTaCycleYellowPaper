@@ -971,7 +971,7 @@ Please refer to the live roadmap planning document linked $\href{https://docs.go
 
 We describe an approach to evolutionary programming for GSLTs.  We
 assume an interactive GSLT, say $I$. That is, $I$ enjoys a
-hypothesis-free (or base) reduction rule of the form $K( P, E ) ~> K'(
+hypothesis-free (or base) reduction rule of the form $K( P, E ) \leadsto K'(
 P', E' )$.  And, for simplicity, we assume this is the only rewrite of
 the theory. \footnote{We can detect this with a spatial type on
 MeTTaIL theories.}
@@ -987,19 +987,19 @@ the context in which the program or agent is operating).
 \begin{itemize}
 \item $\lambda$-calculus:
   \begin{itemize}
-  \item $K = App$, $P = Abs( [x]f )$, $E = arg$,
-%%  \item $P' = f[ arg / x ]$, $E' = \empty$, $K' = \box$
-  \item $App( Abs( [x]f ), arg ) ~> f[ arg / x ]$
+  \item $\mathsf{App}( \mathsf{Abs}( [x]f ), arg ) \leadsto f[ arg / x ]$
+  \item $K = \mathsf{App}$, $P = \mathsf{Abs}( [x]f )$, $E = arg$,
+  \item $P' = f[ arg / x ]$, $E' = \epsilon$, $K' = \Box$  
   \end{itemize}
 \item rho calculus:
   \begin{itemize}
-    \item $K = Par$, $P = Recv( x, [y]R )$, $E = Send( x, Q )$,
-%%    \item $P' = R[ @Q / y ]$, $E = 0$, $K' = \box$
-    \item $Par( Recv( x, R ), Send( x, Q ) ) ~> R( @Q )$
+    \item $\mathsf{Par}( \mathsf{Recv}( x, R ), \mathsf{Send}( x, Q ) ) \leadsto R( @Q )$
+    \item $K = \mathsf{Par}$, $P = \mathsf{Recv}( x, [y]R )$, $E = \mathsf{Send}( x, Q )$,
+    \item $P' = R[ @Q / y ]$, $E = 0$, $K' = \Box$    
   \end{itemize}
 \item or
   \begin{itemize}
-  \item $P = Send( x, Q )$, $E = Recv( x, R )$,
+  \item $P = \mathsf{Send}( x, Q )$, $E = \mathsf{Recv}( x, R )$,
   \item $P' = 0, E' = R( @Q )$, etc
   \end{itemize}
 \end{itemize}
@@ -1009,48 +1009,50 @@ Is there a cross-over operator between two interactive GSLTs, say $I$ and $J$?
 Suppose that $Terms( I ) = Terms( J )$. For simplicity we will also
 suppose that $Equations( I ) = Equations( J )$. However, we will
 revisit this.  Suppose further that $base( I ) = F_s( F_{1_s}( P ),
-F_{2_s}( E ) ) ~> F_t( F_{1_t}( P' ), F_{2_t}( E' ) )$ and $base( J ) = M_s(
-M_{1_s}( P ), M_{2_s}( E ) ) ~> M_t( M_{1_t}( P' ), M_{2_t}( E' ) )$.  Then we
-can define a collection of new theories, denoted $I \otimes J$. To
+F_{2_s}( E ) ) \leadsto F_t( F_{1_t}( P' ), F_{2_t}( E' ) )$ and $base( J ) = M_s(
+M_{1_s}( P ), M_{2_s}( E ) ) \leadsto M_t( M_{1_t}( P' ), M_{2_t}( E' ) )$.  Then we
+can define a collection of new theories, denoted $I \Join J$. To
 specify this collection we define some useful auxilliary collections.
 
 Ed note: arities have to match.
 
 \begin{align}
-  src( I \otimes J ) &= \{ \\
-    F_s( F_{1_s}( P ), F_{2_s}( E ) ),\\
-    M_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
-    F_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
-    M_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
-    F_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
-    M_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
-    F_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
-    M_s( F_{1_s}( P ), F_{2_s}( E ) )\\
+  \mathsf{src}( I \Join J ) &= \{ \\
+    & F_s( F_{1_s}( P ), F_{2_s}( E ) ),\\
+    & M_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    & F_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    & M_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    & F_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    & M_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    & F_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    & M_s( F_{1_s}( P ), F_{2_s}( E ) )\\
   \}
 \end{align}
 
 \begin{align}
-  trgt( I \otimes J ) &= \{ \\
-    F_t( F_{1_t}( P' ), F_{2_t}( E' ) ),\\
-    M_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
-    F_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
-    M_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
-    F_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
-    M_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
-    F_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
-    M_t( F_{1_t}( P' ), F_{2_t}( E' ) )\\
+  \mathsf{trgt}( I \Join J ) &= \{ \\
+    & F_t( F_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & M_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & F_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & M_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & F_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & M_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & F_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & M_t( F_{1_t}( P' ), F_{2_t}( E' ) )\\
   \}
 \end{align}
 
 Finally, we can define
 
 \begin{align}
-  I \otimes J = \mathsf{for}( src \mathsf{<-} \mathsf{src}( I \otimes J ); trgt \mathsf{<-} \mathsf{trgt}( I \otimes J ) ) \mathsf{yield} \{ \\
-  \mathsf{Theory} \mathsf{mkName}( src, trgt )() \{ \\
-       \mathsf{Nil} \\
-    \mathsf{Terms} \{ \mathsf{Terms}( I ) \} \\
-    \mathsf{Equations} \{ \mathsf{Equations}( J ) \} \\
-    \mathsf{Rewrites} \{ src ~> trgt \} \\
+  I \Join J \\
+  & = \\
+  & \mathsf{for}( src \leftarrow \mathsf{src}( I \Join J ); \; trgt \leftarrow \mathsf{trgt}( I \Join J ) ) \; \mathsf{yield}\; \{ \\
+  & \mathsf{Theory}\; \mathsf{mkName}( src, trgt )() \{ \\
+       & \quad \mathsf{Nil} \\
+    & \quad \mathsf{Terms}\; \{ \mathsf{Terms}( I ) \} \\
+    & \quad \mathsf{Equations}\; \{ \mathsf{Equations}( J ) \} \\
+    & \quad \mathsf{Rewrites}\; \{ src \leadsto trgt \} \\
   \}
 \end{align}
 
@@ -1060,30 +1062,30 @@ as well as equations.
 Now, we can describe a population, say $Pop$, (of theories) distributed over a
 namespace, say $N$, according to a distribution, $D$.
 
-\begin{align}
-  \mathsf{letrec} islands &= \\
-  Locate( Pop, N, D ) &= \\
-    \mathsf{foldLeft}( \\
-      Pop, \\
-      0, \\
-      ( acc, e ) \mathsf{=>} \{ \\
-        \mathsf{let} ( sex, chan ) \mathsf{=} ( \mathsf{rand}( 0, 1 ), \mathsf{choose}( N, D ) ) \mathsf{in} \\
-        \mathsf{let} pheno = \\
-          \mathsf{match} sex \mathsf{with} \{ \\
-            \mathsf{case} 0 \mathsf{=>} \{ \\
-              \mathsf{for}( t\mathsf{@}\mathsf{Theory}\{ \mathsf{terms}( e ), \mathsf{equations}( e ), r \} \mathsf{<-} chan )\{ \\
-                Locate( e \otimes t, { chan }, \mathsf{Delta}( chan ) ) \\
-              \} \\
-            \}
-            \mathsf{case} 1 \mathsf{=>} \{ chan\mathsf{!}( e ) \} \\
-         \} \mathsf{in} \\
-          acc \mathsf{|} pheno \\
-      \} \\
-    ) \mathsf{in} \\
-   \mathsf{free}( \mathsf{MeTTaIL} ) \mathsf{=>} \{ \\
-      islands \\
-   \} 
-\end{align}
+\begin{align*}
+  \mathsf{let}\; islands( Pop, N, D )\; &= \\
+  & \mathsf{letrec}\; Locate( Pop, N, D ) &= \\
+    &\quad \mathsf{foldLeft}( \\
+      &\quad\quad Pop, \\
+      &\quad\quad 0, \\
+      &\quad\quad ( acc, e ) \;\mathsf{=>}\; \{ \\
+      &\quad\quad\quad \mathsf{let}\; ( sex, chan )\; \mathsf{=}\; ( \mathsf{rand}( 0, 1 ), \mathsf{choose}( N, D ) ) \;\mathsf{in}\; \\
+        &\quad\quad\quad\quad \mathsf{let}\; pheno = \\
+          &\quad\quad\quad\quad\quad\quad \mathsf{match}\; sex\; \mathsf{with}\; \{ \\
+            &\quad\quad\quad\quad\quad\quad\quad \mathsf{case}\; 0\; \Rightarrow\; \{ \\
+              &\quad\quad\quad\quad\quad\quad\quad\quad \mathsf{for}( t\mathsf{@}\mathsf{Theory}\;\{ \mathsf{terms}( e ), \mathsf{equations}( e ), r \} \;\leftarrow\; chan )\{ \\
+                &\quad\quad\quad\quad\quad\quad\quad\quad\quad Locate( e \Join t, { chan }, \mathsf{Delta}( chan ) ) \\
+              &\quad\quad\quad\quad\quad\quad\quad\quad \} \\
+            &\quad\quad\quad\quad\quad\quad\quad \} \\
+            &\quad\quad\quad\quad\quad\quad\quad \mathsf{case}\; 1\; \Rightarrow \{ chan\mathsf{!}( e ) \} \\
+         &\quad\quad\quad\quad\quad\quad \} \;\mathsf{in}\; \\
+          &\quad\quad\quad\quad\quad\quad\quad acc \; \mathsf{|}\; pheno \\
+      &\quad\quad\quad \} \\
+    &\quad\quad ) \; \mathsf{in}\; \\
+   &\quad\quad \mathsf{free}( \mathsf{MeTTaIL} ) \; \Rightarrow \; \{ \\
+      &\quad\quad\quad Locate( Pop, N, D ) \\
+   &\quad\quad\} 
+\end{align*}
 
 Note that this preserves the core action of each theory, but changes the
 contextual wrapper around this action. Compare this with biology. Once
