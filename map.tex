@@ -965,6 +965,193 @@ tokenization of capabilities and the integration of agentic AI.
 
 Please refer to the live roadmap planning document linked $\href{https://docs.google.com/spreadsheets/d/1XqL1_ludowA7YHjDkHuX9lQyY5-NBH-mKOMDr4SUQtc/edit?usp=sharing}{here}$.
 
+\section{$\mathsf{MeTTaIL}$ and AI}
+
+The aim of this section is to suggest that $\mathsf{MeTTaIL}$ is not
+merely for describing computational models, but is quite suited both
+to symbolic and neuromorphic AI.
+
+\subsection{Evolutionary programming: Mating Theories in Practice}
+
+We describe an approach to evolutionary programming for GSLTs.  We
+assume an interactive GSLT, say $I$. That is, $I$ enjoys a
+hypothesis-free (or base) reduction rule of the form $K( P, E ) \leadsto K'(
+P', E' )$.  And, for simplicity, we assume this is the only rewrite of
+the theory. \footnote{We can detect this with a spatial type on
+MeTTaIL theories.}
+
+Here $K$ is some constructor of the theory, $P$ is a subtype of $Proc$
+(the principal export of $I$), $E$ is also subtype of $Proc$. We use the
+mnemonics $P$ and $E$ to remind us that $P$ is to be thought of as
+"program" (aka the agent or subject of the state), and $E$ is to be
+thought of as environment (the aspect of the state understood as
+the context in which the program or agent is operating).
+
+\paragraph{Examples}:
+\begin{itemize}
+\item $\lambda$-calculus:
+  \begin{itemize}
+  \item $\mathsf{App}( \mathsf{Abs}( [x]f ), arg ) \leadsto f[ arg / x ]$
+  \item $K = \mathsf{App}$, $P = \mathsf{Abs}( [x]f )$, $E = arg$,
+  \item $P' = f[ arg / x ]$, $E' = \epsilon$, $K' = \Box$  
+  \end{itemize}
+\item rho calculus:
+  \begin{itemize}
+    \item $\mathsf{Par}( \mathsf{Recv}( x, R ), \mathsf{Send}( x, Q ) ) \leadsto R( @Q )$
+    \item $K = \mathsf{Par}$, $P = \mathsf{Recv}( x, [y]R )$, $E = \mathsf{Send}( x, Q )$,
+    \item $P' = R[ @Q / y ]$, $E = 0$, $K' = \Box$    
+  \end{itemize}
+\item or
+  \begin{itemize}
+  \item $P = \mathsf{Send}( x, Q )$, $E = \mathsf{Recv}( x, R )$,
+  \item $P' = 0, E' = R( @Q )$, etc
+  \end{itemize}
+\end{itemize}
+
+Is there a cross-over operator between two interactive GSLTs, say $I$ and $J$?
+
+Suppose that $Terms( I ) = Terms( J )$. For simplicity we will also
+suppose that $Equations( I ) = Equations( J )$. However, we will
+revisit this.  Suppose further that $base( I ) = F_s( F_{1_s}( P ),
+F_{2_s}( E ) ) \leadsto F_t( F_{1_t}( P' ), F_{2_t}( E' ) )$ and $base( J ) = M_s(
+M_{1_s}( P ), M_{2_s}( E ) ) \leadsto M_t( M_{1_t}( P' ), M_{2_t}( E' ) )$.  Then we
+can define a collection of new theories, denoted $I \Join J$. To
+specify this collection we define some useful auxilliary collections.
+
+Ed note: arities have to match.
+
+\begin{align*}
+  \mathsf{src}( I \Join J ) &= \{ \\
+    & F_s( F_{1_s}( P ), F_{2_s}( E ) ),\\
+    & M_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    & F_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    & M_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    & F_s( F_{1_s}( P ), M_{2_s}( E ) ),\\
+    & M_s( M_{1_s}( P ), F_{2_s}( E ) ),\\
+    & F_s( M_{1_s}( P ), M_{2_s}( E ) ),\\
+    & M_s( F_{1_s}( P ), F_{2_s}( E ) )\\
+  \}
+\end{align*}
+
+\begin{align*}
+  \mathsf{trgt}( I \Join J ) &= \{ \\
+    & F_t( F_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & M_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & F_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & M_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & F_t( F_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & M_t( M_{1_t}( P' ), F_{2_t}( E' ) ),\\
+    & F_t( M_{1_t}( P' ), M_{2_t}( E' ) ),\\
+    & M_t( F_{1_t}( P' ), F_{2_t}( E' ) )\\
+  \}
+\end{align*}
+
+Finally, we can define
+
+\begin{align*}
+  I \Join J \\
+  & = \\
+  & \mathsf{for}( src \leftarrow \mathsf{src}( I \Join J ); \; trgt \leftarrow \mathsf{trgt}( I \Join J ) ) \; \mathsf{yield}\; \{ \\
+  & \quad \mathsf{Theory}\; \mathsf{mkName}( src, trgt )() \{ \\
+       & \quad \quad \mathsf{Nil} \\
+    & \quad \quad \mathsf{Terms}\; \{ \mathsf{Terms}( I ) \} \\
+    & \quad \quad \mathsf{Equations}\; \{ \mathsf{Equations}( J ) \} \\
+    & \quad \quad \mathsf{Rewrites}\; \{ src \leadsto trgt \} \\
+  & \quad \} \\
+  \}
+\end{align*}
+
+Notice that we could have applied the same technique to contextual rewrites,
+as well as equations.
+
+Now, we can describe a population, say $Pop$, (of theories) distributed over a
+namespace, say $N$, according to a distribution, $D$.
+
+\begin{align*}
+  \mathsf{let}\; islands( Pop, N, D )\; &= \\
+  & \mathsf{letrec}\; Locate( Pop, N, D ) &= \\
+    &\quad \mathsf{foldLeft}( \\
+      &\quad\quad Pop, \\
+      &\quad\quad 0, \\
+      &\quad\quad ( acc, e ) \;\mathsf{=>}\; \{ \\
+      &\quad\quad\quad \mathsf{let}\; ( sex, chan )\; \mathsf{=}\; ( \mathsf{rand}( 0, 1 ), \mathsf{choose}( N, D ) ) \;\mathsf{in}\; \\
+        &\quad\quad\quad\quad \mathsf{let}\; pheno = \\
+          &\quad\quad\quad\quad\quad\quad \mathsf{match}\; sex\; \mathsf{with}\; \{ \\
+            &\quad\quad\quad\quad\quad\quad\quad \mathsf{case}\; 0\; \Rightarrow\; \{ \\
+              &\quad\quad\quad\quad\quad\quad\quad\quad \mathsf{for}( t\mathsf{@}\mathsf{Theory}\;\{ \mathsf{terms}( e ), \mathsf{equations}( e ), r \} \;\leftarrow\; chan )\{ \\
+                &\quad\quad\quad\quad\quad\quad\quad\quad\quad Locate( e \Join t, { chan }, \mathsf{Delta}( chan ) ) \\
+              &\quad\quad\quad\quad\quad\quad\quad\quad \} \\
+            &\quad\quad\quad\quad\quad\quad\quad \} \\
+            &\quad\quad\quad\quad\quad\quad\quad \mathsf{case}\; 1\; \Rightarrow \{ chan\mathsf{!}( e ) \} \\
+         &\quad\quad\quad\quad\quad\quad \} \;\mathsf{in}\; \\
+          &\quad\quad\quad\quad\quad\quad\quad acc \; \mathsf{|}\; pheno \\
+      &\quad\quad\quad \} \\
+    &\quad\quad ) \; \mathsf{in}\; \\
+   &\quad\quad \mathsf{free}( \mathsf{MeTTaIL} ) \; \Rightarrow \; \{ \\
+      &\quad\quad\quad Locate( Pop, N, D ) \\
+   &\quad\quad\} 
+\end{align*}
+
+Note that this preserves the core action of each theory, but changes the
+contextual wrapper around this action. Compare this with biology. Once
+chemistry had kindly supplied the Krebs cycle, this core action is conserved
+across all life. Likewise, once biology had kindly supplied sexual
+reproduction, this core action is conserved across all sexually reproducing
+life forms.
+
+\subsection{Stochasticity and learning}
+
+In addition to the $\mathsf{hypercube}$ endofunctor on the category of
+GSLTs there is another family of endofunctors taking GSLTs to
+corresponding stochastic versions, both for 1- \& 2-norm probability
+distributions, the latter effectively giving us a way to use GSLTs to
+write down quantum algorithms. Here we use the 1-norm probability
+distributions to define a generic notion of learning.
+
+The intuition is that we can imagine a version of neural networks
+where the connections are between black boxes. In the ordinary case,
+the black box is a highly constrained computation that either fires or
+it doesn't based on a threshold measurement. In this case, all the
+intelligence is in the connectivity, rather than in the black box. We
+can imagine, however, making the black box more intelligent. GSLTs
+allow us to defined what can go in the black box, while stochasticity
+effectively allows us to program the connectivity. In a word, we have
+a compositional notion of neural networks.
+
+To make this concrete we consider a generic learning for rholang.
+
+\begin{align*}
+  \mathsf{def}\; learn( \\
+  & x_1, \ldots, x_n, \\
+  & w_1, \ldots, w_n, \\
+  & s_1, \ldots, s_m, \\
+  & a \\
+  & )\; = \; \{ \\
+   &\mathsf{for}( y_1 \;\overset{w_1}{\leftarrow} x1\; \& \ldots \&\; y_n \overset{w_n} \leftarrow x_n )\;\{\;  \\
+      &\quad \mathsf{match}\; ( y_1, \ldots, y_n )\; \mathsf{with} \\
+         &\quad\quad \mathsf{case}\; ( v1Spec1, \ldots, vnSpec1 )\; \Rightarrow \{ \\
+            &\quad\quad\quad a\mathsf{!}( v_1 ) \\
+            &\quad\quad\quad |\; learn( x_1, \ldots, x_n, s_1( w_1 ), \ldots, s_1( w_n ), s_1, \ldots, s_m, a ) \\
+         &\quad\quad \} \\
+         &\quad\quad \ldots \\
+         &\quad\quad \mathsf{case}\; ( v1Specm, …, vnSpecm ) \; \Rightarrow \; \{ \\
+            &\quad\quad\quad a\mathsf{!}( vm ) \\
+            &\quad\quad\quad |\; learn( x_1, \ldots, x_n, s_m( w_1 ), \ldots, s_m( w_n ), s_1, \ldots, s_m, a ) \\
+         &\quad \}
+   &\}
+\}
+\end{align*}
+
+Now, under the current implementations of rholang, this will not be
+anything like as efficient as what's achieved by transformer based
+networks. However, we also have an algorithm for compiling GSLTs to
+hypervectors. This may yield a more efficient execution path for these
+kinds of compositional connection-based learning algorithms.
+
+Again, the main point of these examples is that $\mathsf{MeTTaIL}$
+provides a natural setting for writing AI applications that run in a
+decentralized setting.
+
 \section{A few use cases}
 
 \subsection{Private data and models-as-a-service marketplace}
